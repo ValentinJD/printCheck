@@ -256,6 +256,17 @@ public class Main {
         }
     }
 
+    static void blackInWhite(BufferedImage source) {
+
+        // Делаем двойной цикл, чтобы обработать каждый пиксель
+        for (int x = 0; x < source.getWidth(); x++) {
+            for (int y = 0; y < source.getHeight(); y++) {
+                // И устанавливаем белый цвет результирующего изображения
+                source.setRGB(x, y, -1);
+            }
+        }
+    }
+
     static void putImageToA4(List<Pixel[][]> listChecks) {
         // Открываем изображение
         LOGGER.info("Вставка чека в образец А4 ");
@@ -265,6 +276,8 @@ public class Main {
         try {
             // Создаем новое пустое изображение, такого же размера
             BufferedImage result = new BufferedImage(A4_WIDTH, A4_HEIGHT, 5);
+
+            blackInWhite(result);
 
             int numberCheck = 1;
             String pathname = getNameForNextA4Page(numberPageA4ForPrint);
@@ -282,7 +295,7 @@ public class Main {
                     output = new File(getNameForNextA4Page(numberPageA4ForPrint));
                     result = new BufferedImage(A4_WIDTH, A4_HEIGHT, 5);
                     numberCheck = 1;
-
+                    blackInWhite(result);
                 }
 
                 putImageInPage(listChecks.get(i), numberCheck, result);
