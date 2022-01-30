@@ -36,6 +36,8 @@ public class ConverterPdfToImage implements ConverterPdf {
                 LOGGER.info("Преобразование файла пдф в JPG: " + filename);
             }
 
+            document.close();
+
         } catch (IOException e) {
             LOGGER.info(" Не удалось преобразовать файл пдф в JPG: " + sourceFileName);
             e.printStackTrace();
