@@ -37,8 +37,6 @@ public class Main {
 
         String fileNameA4 = "examples" + File.separator + "a40.jpg";
         putImagesToA4(scalableImages, fileNameA4);
-
-
     }
 
     private static void putImagesToA4(List<File> scalableImages, String pathToOut) {
@@ -221,23 +219,6 @@ public class Main {
 
         }
     }
-
-    static void createA4FormatImage(int numberList) {
-        // Создаем новое пустое изображение, такого же размера
-        BufferedImage result = new BufferedImage(A4_WIDTH, A4_HEIGHT, BufferedImage.TYPE_INT_RGB);
-
-
-        String s = "examples" + File.separator + "a4" + numberList + ".jpg";
-        File output = new File(s);
-        LOGGER.info("Сохраняем образец А4 " + s);
-        try {
-            ImageIO.write(result, "jpg", output);
-        } catch (IOException e) {
-            LOGGER.info("Не удалось сохранить образец А4 " + s);
-            e.printStackTrace();
-        }
-    }
-
 
     static void putImageInPage(Pixel[][] check, int numberCheck, BufferedImage result) {
 
