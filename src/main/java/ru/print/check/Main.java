@@ -8,9 +8,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 public class Main {
@@ -18,8 +17,8 @@ public class Main {
 
     public static ConverterPdf converterPdf = new ConverterPdfToImage();
 
-    public static final int A4_HEIGHT = 3508;//1754
-    public static final int A4_WIDTH = 2480;//1240
+    public static final int A4_HEIGHT = 1754;//3508;//1754
+    public static final int A4_WIDTH = 1240;//2480;//1240
 
     public static void main(String[] args) throws IOException {
 
@@ -29,22 +28,28 @@ public class Main {
         List<File> images = getFilesInDir("images/");
         createGreyImages(images);
 
-        List<File> greyImages = getFilesInDir("greyImage/");
+        List<File> greyImages = getFilesInDir("images/");
         List<ImageSize> imageSizes = reSizeImagesOnHeight(greyImages);
 
-        List<File> scalableImages = getFilesInDir("scalable" + File.separator);
-        reSizeImagesOnThreeWidth(scalableImages, imageSizes);
+        Map<Integer, List<ImageSize>> integerListMap = reSizeImagesOnThreeWidth(imageSizes);
 
-        String fileNameA4 = "examples" + File.separator + "a40.jpg";
-        putImagesToA4(scalableImages, fileNameA4);
+        putImageOnThreeCheckInA4(integerListMap);
     }
 
-    private static void putImagesToA4(List<File> scalableImages, String pathToOut) {
+    private static void putImageOnThreeCheckInA4(Map<Integer, List<ImageSize>> mapOnThreeCheck) {
+
+        for (List<ImageSize> list : mapOnThreeCheck.values()) {
+            putImagesToA4(list);
+        }
+
+    }
+
+    private static void putImagesToA4(List<ImageSize> scalableImages) {
 
         List<Pixel[][]> listChecks = new ArrayList<>();
 
-        for (File imageFileName : scalableImages) {
-            Pixel[][] check = copyCheckToArrayPixels(imageFileName.getPath());
+        for (ImageSize imageFileName : scalableImages) {
+            Pixel[][] check = copyCheckToArrayPixels(imageFileName.path);
             listChecks.add(check);
         }
 
@@ -70,7 +75,7 @@ public class Main {
                 ImageSize imageSize = new ImageSize();
                 imageSize.height = height;
                 imageSize.width = width;
-                imageSize.path = pathToScalableImage;
+                imageSize.path = grey.getPath();
                 imageSizes.add(imageSize);
 
                 float k1 = 1;
@@ -78,7 +83,7 @@ public class Main {
                 if (height > A4_HEIGHT) {
                     k1 = (float) A4_HEIGHT / (float) (height);
                 }
-                resizeFile(imagePathToRead, pathToScalableImage, k1);
+                resizeFile(imagePathToRead, imagePathToRead, k1);
             }
         } catch (IOException e) {
             System.out.println("Не удалось масштабировать файл: ");
@@ -89,48 +94,73 @@ public class Main {
 
     }
 
-    private static void reSizeImagesOnThreeWidth(List<File> scalableImagesList, List<ImageSize> imageSizeList) {
+    private static Map<Integer, List<ImageSize>> groupByThreeImageSize(List<ImageSize> imageSizeList) {
         // Логика по изменению размера файлов по три штуки на лист
+        Map<Integer, List<ImageSize>> map = new HashMap<>();
+
+
         // Берем по три
         List<ImageSize> imageSizeThree = new ArrayList<>();
+        int idList = 0;
+        int numberImageSize = 1;
+        for (int i = 0; i < imageSizeList.size(); i++) {
 
-        for (int i = 0; i < scalableImagesList.size(); i++) {
+            if (numberImageSize <= 3) {
+                imageSizeThree.add(imageSizeList.get(i));
 
-            if (i > 2) {
-                break;
+                if (numberImageSize == 3) {
+
+                    map.put(idList,imageSizeThree);
+                    idList++;
+                    imageSizeThree = new ArrayList<>();
+                    numberImageSize = 0;
+                }
+
+                numberImageSize++;
             }
-            imageSizeThree.add(imageSizeList.get(i));
         }
+        return map;
+    }
+
+    private static Map<Integer, List<ImageSize>>  reSizeImagesOnThreeWidth(List<ImageSize> imageSizeList) {
+        Map<Integer, List<ImageSize>> groupByThreeImageMap = groupByThreeImageSize(imageSizeList);
+
         // Определяем общую ширину трех чеков
         LOGGER.info("Определяем общую ширину трех чеков");
-        int sumWidthThreeImage = 0;
 
-        for (ImageSize imageSize : imageSizeThree) {
 
-            sumWidthThreeImage += imageSize.width;
-        }
-        LOGGER.info("Ширина трех файлов: " + sumWidthThreeImage);
-
-        // Определяем коэффициент уменьшения по ширине
-        LOGGER.info("Определяем коэффициент уменьшения по ширине ");
-        float k2 = 1;
-        if (sumWidthThreeImage > A4_WIDTH) {
-            k2 = (float) A4_WIDTH / sumWidthThreeImage;
-
-            // Уменьшаем если ширина превышает
-            int countGreyFileResize = 1;
-            String pathToScalableImage = "scalable" + File.separator + countGreyFileResize++ + ".jpg";
+        for (List<ImageSize> imageSizeThree: groupByThreeImageMap.values() ) {
+            int sumWidthThreeImage = 0;
 
             for (ImageSize imageSize : imageSizeThree) {
-                try {
-                    LOGGER.info("Уменьшаем по ширине " + imageSize.path);
-                    resizeFile(imageSize.path, pathToScalableImage, k2);
-                } catch (IOException e) {
-                    LOGGER.info("Не удалось изменить масштаб по ширине " + imageSize.path);
-                    e.printStackTrace();
+
+                sumWidthThreeImage += imageSize.width;
+            }
+
+            LOGGER.info("Ширина трех файлов: " + sumWidthThreeImage);
+
+            // Определяем коэффициент уменьшения по ширине
+            LOGGER.info("Определяем коэффициент уменьшения по ширине ");
+            float k2 = 1;
+            if (sumWidthThreeImage > A4_WIDTH) {
+                k2 = (float) A4_WIDTH / sumWidthThreeImage;
+
+                // Уменьшаем если ширина превышает
+                int countGreyFileResize = 1;
+
+                for (ImageSize imageSize : imageSizeThree) {
+                    try {
+                        LOGGER.info("Уменьшаем по ширине " + imageSize.path);
+                        resizeFile(imageSize.path, imageSize.path, k2);
+                    } catch (IOException e) {
+                        LOGGER.info("Не удалось изменить масштаб по ширине " + imageSize.path);
+                        e.printStackTrace();
+                    }
                 }
             }
         }
+
+        return groupByThreeImageMap;
     }
 
     static void PdfToJPG(List<File> filesInDir) {
@@ -209,7 +239,7 @@ public class Main {
             }
 
             // Сохраняем результат в новый файл
-            File output = new File("greyImage" + File.separator + numberFile + ".jpg");
+            File output = new File(filename);
             ImageIO.write(result, "jpg", output);
 
         } catch (IOException e) {
@@ -262,7 +292,7 @@ public class Main {
 
             int numberCheck = 1;
             String pathname = getNameForNextA4Page(numberPageA4ForPrint);
-            LOGGER.info("Сохраняем результат в новый файл А4 " + pathname);
+
             File output = new File(pathname);
             for (int i = 0; i < listChecks.size(); i++) {
 
@@ -270,7 +300,7 @@ public class Main {
 
                 if (numberCheck > numberCheckInPage) {
                     // Сохраняем результат в новый файл
-
+                    LOGGER.info("Сохраняем результат в новый файл А4 " + pathname);
                     ImageIO.write(result, "jpg", output);
                     numberPageA4ForPrint++;
                     output = new File(getNameForNextA4Page(numberPageA4ForPrint));
@@ -336,7 +366,7 @@ public class Main {
     public static void resizeFile(String imagePathToRead, String imagePathToWrite, float kScalable)
             throws IOException {
 
-        LOGGER.info("Масштабируем изображение " + imagePathToRead + "с коэффициентом" + kScalable);
+        LOGGER.info("Масштабируем изображение " + imagePathToRead + " с коэффициентом" + kScalable);
 
         File fileToRead = new File(imagePathToRead);
         BufferedImage bufferedImageInput = ImageIO.read(fileToRead);
