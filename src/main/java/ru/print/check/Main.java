@@ -31,9 +31,9 @@ public class Main {
         List<File> greyImages = getFilesInDir("images/");
         List<ImageSize> imageSizes = reSizeImagesOnHeight(greyImages);
 
-        Map<Integer, List<ImageSize>> integerListMap = reSizeImagesOnThreeWidth(imageSizes);
+        Map<Integer, List<ImageSize>> groupByThreeImageMap = reSizeImagesOnThreeWidth(imageSizes);
 
-        putImageOnThreeCheckInA4(integerListMap);
+        putImageOnThreeCheckInA4(groupByThreeImageMap);
     }
 
     private static void putImageOnThreeCheckInA4(Map<Integer, List<ImageSize>> mapOnThreeCheck) {
@@ -44,16 +44,16 @@ public class Main {
 
     }
 
-    private static void putImagesToA4(List<ImageSize> scalableImages) {
+    private static void putImagesToA4(List<ImageSize> scalableImagesGroupByThree) {
 
-        List<Pixel[][]> listChecks = new ArrayList<>();
+        List<Pixel[][]> threeChecks = new ArrayList<>();
 
-        for (ImageSize imageFileName : scalableImages) {
+        for (ImageSize imageFileName : scalableImagesGroupByThree) {
             Pixel[][] check = copyCheckToArrayPixels(imageFileName.path);
-            listChecks.add(check);
+            threeChecks.add(check);
         }
 
-        putImageToA4(listChecks);
+        putImageToA4(threeChecks);
     }
 
     static List<ImageSize> reSizeImagesOnHeight(List<File> greyImages) {
@@ -108,7 +108,7 @@ public class Main {
             if (numberImageSize <= 3) {
                 imageSizeThree.add(imageSizeList.get(i));
 
-                if (numberImageSize == 3) {
+                if (numberImageSize == 3 || i == imageSizeList.size()-1  ) {
 
                     map.put(idList,imageSizeThree);
                     idList++;
@@ -278,11 +278,12 @@ public class Main {
         }
     }
 
-    static void putImageToA4(List<Pixel[][]> listChecks) {
+
+    public static int numberPageA4ForPrint = 1;
+
+    static void putImageToA4(List<Pixel[][]> threeChecks) {
         // Открываем изображение
         LOGGER.info("Вставка чека в образец А4 ");
-
-        int numberPageA4ForPrint = 1;
 
         try {
             // Создаем новое пустое изображение, такого же размера
@@ -294,24 +295,11 @@ public class Main {
             String pathname = getNameForNextA4Page(numberPageA4ForPrint);
 
             File output = new File(pathname);
-            for (int i = 0; i < listChecks.size(); i++) {
+            for (int i = 0; i < threeChecks.size(); i++) {
 
-                int numberCheckInPage = 3;
+                putImageInPage(threeChecks.get(i), numberCheck, result);
 
-                if (numberCheck > numberCheckInPage) {
-                    // Сохраняем результат в новый файл
-                    LOGGER.info("Сохраняем результат в новый файл А4 " + pathname);
-                    ImageIO.write(result, "jpg", output);
-                    numberPageA4ForPrint++;
-                    output = new File(getNameForNextA4Page(numberPageA4ForPrint));
-                    result = new BufferedImage(A4_WIDTH, A4_HEIGHT, 5);
-                    numberCheck = 1;
-                    blackInWhite(result);
-                }
-
-                putImageInPage(listChecks.get(i), numberCheck, result);
-
-                if (i == listChecks.size() - 1) {
+                if (i == threeChecks.size() - 1) {
                     ImageIO.write(result, "jpg", output);
                     numberPageA4ForPrint++;
                     output = new File(getNameForNextA4Page(numberPageA4ForPrint));
