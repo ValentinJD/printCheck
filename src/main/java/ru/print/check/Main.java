@@ -17,9 +17,10 @@ public class Main {
 
     public static ConverterPdf converterPdf = new ConverterPdfToImage();
 
-    public static final int A4_HEIGHT = 1754;//3508;//1754
-    public static final int A4_WIDTH = 1240;//2480;//1240
+    public static final int A4_HEIGHT = 3508;//3508;//1754
+    public static final int A4_WIDTH = 2480;//2480;//1240
     public static int numberPageA4ForPrint = 1;
+    public static float padding = 0.9f;
 
     public static void main(String[] args) {
 
@@ -34,7 +35,7 @@ public class Main {
 
         Map<Integer, List<ImageSize>> groupByThreeImageMap = groupByThreeImageSize(imageSizes);
 
-        reSizeImagesOnThreeWidth(groupByThreeImageMap);
+        reSizeImagesOnThreeWidth(groupByThreeImageMap, padding);
 
         putImageOnThreeCheckInA4(groupByThreeImageMap);
     }
@@ -107,9 +108,9 @@ public class Main {
             if (numberImageSize <= 3) {
                 imageSizeThree.add(imageSizeList.get(i));
 
-                if (numberImageSize == 3 || i == imageSizeList.size()-1  ) {
+                if (numberImageSize == 3 || i == imageSizeList.size() - 1) {
 
-                    map.put(idList,imageSizeThree);
+                    map.put(idList, imageSizeThree);
                     idList++;
                     imageSizeThree = new ArrayList<>();
                     numberImageSize = 0;
@@ -121,30 +122,25 @@ public class Main {
         return map;
     }
 
-    private static void reSizeImagesOnThreeWidth(Map<Integer, List<ImageSize>> groupByThreeImageMap) {
+    private static void reSizeImagesOnThreeWidth(Map<Integer, List<ImageSize>> groupByThreeImageMap, float padding) {
 
         // Определяем общую ширину трех чеков
         LOGGER.info("Определяем общую ширину трех чеков");
 
 
-        for (List<ImageSize> imageSizeThree: groupByThreeImageMap.values() ) {
+        for (List<ImageSize> imageSizeThree : groupByThreeImageMap.values()) {
             int sumWidthThreeImage = 0;
 
             for (ImageSize imageSize : imageSizeThree) {
-
                 sumWidthThreeImage += imageSize.width;
             }
 
             LOGGER.info("Ширина трех файлов: " + sumWidthThreeImage);
 
-            // Определяем коэффициент уменьшения по ширине
             LOGGER.info("Определяем коэффициент уменьшения по ширине ");
-            float k2 = 1;
+            // Уменьшаем если ширина превышает
             if (sumWidthThreeImage > A4_WIDTH) {
-                k2 = (float) A4_WIDTH / sumWidthThreeImage;
-
-                // Уменьшаем если ширина превышает
-                int countGreyFileResize = 1;
+                float k2 = ( (float) A4_WIDTH / sumWidthThreeImage ) * padding;
 
                 for (ImageSize imageSize : imageSizeThree) {
                     try {
@@ -160,7 +156,7 @@ public class Main {
     }
 
     static void PdfToJPG(List<File> filesInDir) {
-        Integer countPage = 0;
+        int countPage = 0;
         for (File filesName : filesInDir) {
             converterPdf.toJPG(filesName.getPath(), "images" + File.separator + "" + countPage);
             countPage++;
@@ -169,10 +165,8 @@ public class Main {
     }
 
     static void createGreyImages(List<File> images) {
-        int countImageFile = 0;
         for (File imageFileName : images) {
-            createGreyImage(imageFileName.getPath(), countImageFile);
-            countImageFile++;
+            createGreyImage(imageFileName.getPath());
         }
     }
 
@@ -192,7 +186,7 @@ public class Main {
         return files;
     }
 
-    static void createGreyImage(String filename, int numberFile) {
+    static void createGreyImage(String filename) {
         try {
 
             // Открываем изображение
@@ -226,7 +220,7 @@ public class Main {
                     int newGreen = grey;
                     int newBlue = grey;
 
-                    //  Cоздаем новый цвет
+                    //  Создаем новый цвет
                     Color newColor = new Color(newRed, newGreen, newBlue);
 
                     // И устанавливаем этот цвет в текущий пиксель результирующего изображения
@@ -240,9 +234,6 @@ public class Main {
 
         } catch (IOException e) {
             LOGGER.info("Не удалось преобразовать в оттенки серого файл " + filename);
-            // При открытии и сохранении файлов, может произойти неожиданный случай.
-            // И на этот случай у нас try catch
-
         }
     }
 
@@ -254,11 +245,13 @@ public class Main {
 
                 // Берем цвет пикселя чека
                 Color color = check[x][y].color;
-                // И устанавливаем этот цвет в текущий пиксель
 
                 int incrementCheck = (numberCheck - 1) * A4_WIDTH / 3;
 
-                result.setRGB(x + incrementCheck, y, color.getRGB());
+                int indent = (int) (A4_WIDTH - (padding * A4_WIDTH)) /4;
+                int indentX = x + incrementCheck + indent;
+                // И устанавливаем этот цвет в текущий пиксель
+                result.setRGB(indentX, y, color.getRGB());
             }
         }
     }
@@ -311,8 +304,7 @@ public class Main {
     }
 
     private static String getNameForNextA4Page(int numberPageA4ForPrint) {
-        String pathname = "imageForPrint" + File.separator + "print-" + numberPageA4ForPrint++ + ".jpg";
-        return pathname;
+        return "imageForPrint" + File.separator + "print-" + numberPageA4ForPrint + ".jpg";
     }
 
     static Pixel[][] copyCheckToArrayPixels(String filename) {
