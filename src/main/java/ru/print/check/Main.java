@@ -19,8 +19,9 @@ public class Main {
 
     public static final int A4_HEIGHT = 1754;//3508;//1754
     public static final int A4_WIDTH = 1240;//2480;//1240
+    public static int numberPageA4ForPrint = 1;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         List<File> filesInDir = getFilesInDir("pdfs/");
         PdfToJPG(filesInDir);
@@ -31,7 +32,9 @@ public class Main {
         List<File> greyImages = getFilesInDir("images/");
         List<ImageSize> imageSizes = reSizeImagesOnHeight(greyImages);
 
-        Map<Integer, List<ImageSize>> groupByThreeImageMap = reSizeImagesOnThreeWidth(imageSizes);
+        Map<Integer, List<ImageSize>> groupByThreeImageMap = groupByThreeImageSize(imageSizes);
+
+        reSizeImagesOnThreeWidth(groupByThreeImageMap);
 
         putImageOnThreeCheckInA4(groupByThreeImageMap);
     }
@@ -41,7 +44,6 @@ public class Main {
         for (List<ImageSize> list : mapOnThreeCheck.values()) {
             putImagesToA4(list);
         }
-
     }
 
     private static void putImagesToA4(List<ImageSize> scalableImagesGroupByThree) {
@@ -60,9 +62,7 @@ public class Main {
         List<ImageSize> imageSizes = new ArrayList<>();
 
         try {
-            int countGreyFile = 1;
             for (File grey : greyImages) {
-                String pathToScalableImage = "scalable" + File.separator + countGreyFile++ + ".jpg";
                 LOGGER.info("Масштабируем файл: " + grey.getPath());
                 // Проверяем высоту
                 String imagePathToRead = grey.getPath();
@@ -83,7 +83,7 @@ public class Main {
                 if (height > A4_HEIGHT) {
                     k1 = (float) A4_HEIGHT / (float) (height);
                 }
-                resizeFile(imagePathToRead, imagePathToRead, k1);
+                resizeFile(imagePathToRead, k1);
             }
         } catch (IOException e) {
             System.out.println("Не удалось масштабировать файл: ");
@@ -97,7 +97,6 @@ public class Main {
     private static Map<Integer, List<ImageSize>> groupByThreeImageSize(List<ImageSize> imageSizeList) {
         // Логика по изменению размера файлов по три штуки на лист
         Map<Integer, List<ImageSize>> map = new HashMap<>();
-
 
         // Берем по три
         List<ImageSize> imageSizeThree = new ArrayList<>();
@@ -122,8 +121,7 @@ public class Main {
         return map;
     }
 
-    private static Map<Integer, List<ImageSize>>  reSizeImagesOnThreeWidth(List<ImageSize> imageSizeList) {
-        Map<Integer, List<ImageSize>> groupByThreeImageMap = groupByThreeImageSize(imageSizeList);
+    private static void reSizeImagesOnThreeWidth(Map<Integer, List<ImageSize>> groupByThreeImageMap) {
 
         // Определяем общую ширину трех чеков
         LOGGER.info("Определяем общую ширину трех чеков");
@@ -151,7 +149,7 @@ public class Main {
                 for (ImageSize imageSize : imageSizeThree) {
                     try {
                         LOGGER.info("Уменьшаем по ширине " + imageSize.path);
-                        resizeFile(imageSize.path, imageSize.path, k2);
+                        resizeFile(imageSize.path, k2);
                     } catch (IOException e) {
                         LOGGER.info("Не удалось изменить масштаб по ширине " + imageSize.path);
                         e.printStackTrace();
@@ -159,8 +157,6 @@ public class Main {
                 }
             }
         }
-
-        return groupByThreeImageMap;
     }
 
     static void PdfToJPG(List<File> filesInDir) {
@@ -278,9 +274,6 @@ public class Main {
         }
     }
 
-
-    public static int numberPageA4ForPrint = 1;
-
     static void putImageToA4(List<Pixel[][]> threeChecks) {
         // Открываем изображение
         LOGGER.info("Вставка чека в образец А4 ");
@@ -351,12 +344,12 @@ public class Main {
         return array;
     }
 
-    public static void resizeFile(String imagePathToRead, String imagePathToWrite, float kScalable)
+    public static void resizeFile(String imagePath, float kScalable)
             throws IOException {
 
-        LOGGER.info("Масштабируем изображение " + imagePathToRead + " с коэффициентом" + kScalable);
+        LOGGER.info("Масштабируем изображение " + imagePath + " с коэффициентом" + kScalable);
 
-        File fileToRead = new File(imagePathToRead);
+        File fileToRead = new File(imagePath);
         BufferedImage bufferedImageInput = ImageIO.read(fileToRead);
 
         int resizeWidth = (int) (bufferedImageInput.getWidth() * kScalable);
@@ -369,9 +362,8 @@ public class Main {
         g2d.drawImage(bufferedImageInput, 0, 0, resizeWidth, resizeHeight, null);
         g2d.dispose();
 
-        String formatName = imagePathToWrite.substring(imagePathToWrite
-                .lastIndexOf(".") + 1);
+        String formatName = imagePath.substring(imagePath.lastIndexOf(".") + 1);
 
-        ImageIO.write(bufferedImageOutput, formatName, new File(imagePathToWrite));
+        ImageIO.write(bufferedImageOutput, formatName, new File(imagePath));
     }
 }
