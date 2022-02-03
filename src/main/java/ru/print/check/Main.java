@@ -16,14 +16,14 @@ import java.util.logging.Logger;
 public class Main {
     static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
-    public static ConverterPdf converterPdf = new ConverterPdfToImage();
+    private static ConverterPdf converterPdf = new ConverterPdfToImage();
 
-    public static final int HEIGHT_PAGE = 3508;//3508;//1754
-    public static final int WIDTH_PAGE = 2480;//2480;//1240
-    public static int numberPageForPrint = 1;
-    public static float padding = 0.9f;
-    public static float brightness = 4f;
-    public static float contrast = -700f;
+    private static final int HEIGHT_PAGE = 3508;//3508;//1754
+    private static final int WIDTH_PAGE = 2480;//2480;//1240
+    private static int numberPageForPrint = 1;
+    private static float padding = 0.9f;
+    private static float brightness = 4f;
+    private static float contrast = -700f;
 
     public static void main(String[] args) {
 
@@ -61,7 +61,7 @@ public class Main {
         putChecksOnPage(threeChecks);
     }
 
-    static List<ImageSize> reSizeImagesOnHeight(List<File> images) {
+    private static List<ImageSize> reSizeImagesOnHeight(List<File> images) {
         List<ImageSize> imageSizes = new ArrayList<>();
 
         getImageSizeList(images, imageSizes);
@@ -165,7 +165,7 @@ public class Main {
         }
     }
 
-    static void PdfToJPG(List<File> listPdfFiles) {
+    private static void PdfToJPG(List<File> listPdfFiles) {
         int countPage = 0;
         for (File fileName : listPdfFiles) {
             converterPdf.toJPG(fileName.getPath(), "images" + File.separator + "" + countPage);
@@ -173,13 +173,13 @@ public class Main {
         }
     }
 
-    static void processingImagesToShadesOfGrey(List<File> images) {
+    private static void processingImagesToShadesOfGrey(List<File> images) {
         for (File imageFileName : images) {
             createGreyImage(imageFileName.getPath());
         }
     }
 
-    static List<File> getFilesInDir(String path) {
+    private static List<File> getFilesInDir(String path) {
         File dir = new File(path); //path указывает на директорию
 
         List<File> files = new ArrayList<>();
@@ -195,7 +195,7 @@ public class Main {
         return files;
     }
 
-    static void createGreyImage(String filename) {
+    private static void createGreyImage(String filename) {
         try {
 
             // Открываем изображение
@@ -250,8 +250,7 @@ public class Main {
         return rescaleOp.filter(image, image);
     }
 
-
-    static void putImageInPage(Pixel[][] check, int numberCheck, BufferedImage result) {
+    private static void putImageInPage(Pixel[][] check, int numberCheck, BufferedImage result) {
 
         // Делаем двойной цикл, чтобы пройти по файлу чеку
         for (int x = 1; x < check.length; x++) {
@@ -270,7 +269,7 @@ public class Main {
         }
     }
 
-    static void blackInWhite(BufferedImage source) {
+    private static void blackInWhite(BufferedImage source) {
 
         // Делаем двойной цикл, чтобы обработать каждый пиксель
         for (int x = 0; x < source.getWidth(); x++) {
@@ -281,7 +280,7 @@ public class Main {
         }
     }
 
-    static void putChecksOnPage(List<Pixel[][]> threeChecks) {
+    private static void putChecksOnPage(List<Pixel[][]> threeChecks) {
         // Открываем изображение
         LOGGER.info("Вставка трех чеков в лист");
 
@@ -319,7 +318,7 @@ public class Main {
         return "imageForPrint" + File.separator + "print-" + numberPageA4ForPrint + ".jpg";
     }
 
-    static Pixel[][] getArrayPixels(String filename) {
+    private static Pixel[][] getArrayPixels(String filename) {
         // Открываем изображение
         LOGGER.info("Копируем изображение в массив пикселей " + filename);
         File check = new File(filename);
@@ -346,7 +345,7 @@ public class Main {
         return array;
     }
 
-    public static void resizeImageByRatio(String imagePath, float kScalable)
+    private static void resizeImageByRatio(String imagePath, float kScalable)
             throws IOException {
 
         LOGGER.info("Масштабируем изображение " + imagePath + " с коэффициентом" + kScalable);
