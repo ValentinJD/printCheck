@@ -18,9 +18,9 @@ public class Main {
 
     public static ConverterPdf converterPdf = new ConverterPdfToImage();
 
-    public static final int A4_HEIGHT = 3508;//3508;//1754
-    public static final int A4_WIDTH = 2480;//2480;//1240
-    public static int numberPageA4ForPrint = 1;
+    public static final int HEIGHT_PAGE = 3508;//3508;//1754
+    public static final int WIDTH_PAGE = 2480;//2480;//1240
+    public static int numberPageForPrint = 1;
     public static float padding = 0.9f;
     public static float brightness = 4f;
     public static float contrast = -700f;
@@ -31,79 +31,90 @@ public class Main {
         PdfToJPG(filesInDir);
 
         List<File> images = getFilesInDir("images/");
-        createGreyImages(images);
+        processingImagesToShadesOfGrey(images);
 
         List<File> greyImages = getFilesInDir("images/");
         List<ImageSize> imageSizes = reSizeImagesOnHeight(greyImages);
 
-        Map<Integer, List<ImageSize>> groupByThreeImageMap = groupByThreeImageSize(imageSizes);
+        Map<Integer, List<ImageSize>> groupByThreeImageMap = getGroupByThreeImageSizeMap(imageSizes);
 
-        reSizeImagesOnThreeWidth(groupByThreeImageMap, padding);
+        reSizeImagesOnThreeByWidthPage(groupByThreeImageMap, padding);
 
-        putImageOnThreeCheckInA4(groupByThreeImageMap);
+        putThreeCheckOnPage(groupByThreeImageMap);
     }
 
-    private static void putImageOnThreeCheckInA4(Map<Integer, List<ImageSize>> mapOnThreeCheck) {
-
-        for (List<ImageSize> list : mapOnThreeCheck.values()) {
-            putImagesToA4(list);
+    private static void putThreeCheckOnPage(Map<Integer, List<ImageSize>> groupsOnThreeCheck) {
+        for (List<ImageSize> threeChecks : groupsOnThreeCheck.values()) {
+            putListImages(threeChecks);
         }
     }
 
-    private static void putImagesToA4(List<ImageSize> scalableImagesGroupByThree) {
+    private static void putListImages(List<ImageSize> threeProcessedCheques) {
 
         List<Pixel[][]> threeChecks = new ArrayList<>();
 
-        for (ImageSize imageFileName : scalableImagesGroupByThree) {
-            Pixel[][] check = copyCheckToArrayPixels(imageFileName.path);
+        for (ImageSize cheque : threeProcessedCheques) {
+            Pixel[][] check = getArrayPixels(cheque.path);
             threeChecks.add(check);
         }
 
-        putImageToA4(threeChecks);
+        putChecksOnPage(threeChecks);
     }
 
-    static List<ImageSize> reSizeImagesOnHeight(List<File> greyImages) {
+    static List<ImageSize> reSizeImagesOnHeight(List<File> images) {
         List<ImageSize> imageSizes = new ArrayList<>();
 
-        try {
-            for (File grey : greyImages) {
-                LOGGER.info("Масштабируем файл: " + grey.getPath());
-                // Проверяем высоту
-                String imagePathToRead = grey.getPath();
-                File fileToRead = new File(imagePathToRead);
-                BufferedImage bufferedImageInput = ImageIO.read(fileToRead);
-
-                int height = bufferedImageInput.getHeight();
-                int width = bufferedImageInput.getWidth();
-
-                ImageSize imageSize = new ImageSize();
-                imageSize.height = height;
-                imageSize.width = width;
-                imageSize.path = grey.getPath();
-                imageSizes.add(imageSize);
-
-                float k1 = 1;
-                // Масштабируем по высоте если нужно
-                if (height > A4_HEIGHT) {
-                    k1 = (float) A4_HEIGHT / (float) (height);
-                }
-                resizeFile(imagePathToRead, k1);
-            }
-        } catch (IOException e) {
-            System.out.println("Не удалось масштабировать файл: ");
-            e.printStackTrace();
-        }
+        getImageSizeList(images, imageSizes);
 
         return imageSizes;
-
     }
 
-    private static Map<Integer, List<ImageSize>> groupByThreeImageSize(List<ImageSize> imageSizeList) {
-        // Логика по изменению размера файлов по три штуки на лист
-        Map<Integer, List<ImageSize>> map = new HashMap<>();
+    private static void getImageSizeList(List<File> images, List<ImageSize> imageSizes) {
+        try {
+            for (File image : images) {
+                LOGGER.info("Масштабируем файл: " + image.getPath());
+                // Проверяем высоту
+                String imagePathToRead = image.getPath();
+                File fileToRead = new File(imagePathToRead);
+                BufferedImage bufferedImage = ImageIO.read(fileToRead);
 
-        // Берем по три
+                int height = bufferedImage.getHeight();
+                int width = bufferedImage.getWidth();
+
+                ImageSize imageSize = getImageSize(image, height, width);
+                imageSizes.add(imageSize);
+
+                fitImageOnHeight(imagePathToRead, height);
+            }
+        } catch (IOException e) {
+            System.out.println("Не удалось уменьшить по высоте страницы файл: ");
+            e.printStackTrace();
+        }
+    }
+
+    private static void fitImageOnHeight(String imagePathToRead, int height) throws IOException {
+        float kScalable = 1;
+        // Масштабируем по высоте если нужно
+        if (height > HEIGHT_PAGE) {
+            kScalable = (float) HEIGHT_PAGE / (float) height;
+        }
+        resizeImageByRatio(imagePathToRead, kScalable);
+    }
+
+    private static ImageSize getImageSize(File grey, int height, int width) {
+        ImageSize imageSize = new ImageSize();
+        imageSize.height = height;
+        imageSize.width = width;
+        imageSize.path = grey.getPath();
+        return imageSize;
+    }
+
+    private static Map<Integer, List<ImageSize>> getGroupByThreeImageSizeMap(List<ImageSize> imageSizeList) {
+
+        Map<Integer, List<ImageSize>> groupingMap = new HashMap<>();
+
         List<ImageSize> imageSizeThree = new ArrayList<>();
+
         int idList = 0;
         int numberImageSize = 1;
         for (int i = 0; i < imageSizeList.size(); i++) {
@@ -113,7 +124,7 @@ public class Main {
 
                 if (numberImageSize == 3 || i == imageSizeList.size() - 1) {
 
-                    map.put(idList, imageSizeThree);
+                    groupingMap.put(idList, imageSizeThree);
                     idList++;
                     imageSizeThree = new ArrayList<>();
                     numberImageSize = 0;
@@ -122,33 +133,29 @@ public class Main {
                 numberImageSize++;
             }
         }
-        return map;
+        return groupingMap;
     }
 
-    private static void reSizeImagesOnThreeWidth(Map<Integer, List<ImageSize>> groupByThreeImageMap, float padding) {
+    private static void reSizeImagesOnThreeByWidthPage(Map<Integer, List<ImageSize>> groupByThreeImageMap, float padding) {
 
         // Определяем общую ширину трех чеков
         LOGGER.info("Определяем общую ширину трех чеков");
 
-
         for (List<ImageSize> imageSizeThree : groupByThreeImageMap.values()) {
-            int sumWidthThreeImage = 0;
-
-            for (ImageSize imageSize : imageSizeThree) {
-                sumWidthThreeImage += imageSize.width;
-            }
+            int sumWidthThreeImage = imageSizeThree.stream()
+                    .mapToInt(img -> img.width).sum();
 
             LOGGER.info("Ширина трех файлов: " + sumWidthThreeImage);
 
             LOGGER.info("Определяем коэффициент уменьшения по ширине ");
             // Уменьшаем если ширина превышает
-            if (sumWidthThreeImage > A4_WIDTH) {
-                float k2 = ( (float) A4_WIDTH / sumWidthThreeImage ) * padding;
+            if (sumWidthThreeImage > WIDTH_PAGE) {
+                float kScalable = ( (float) WIDTH_PAGE / sumWidthThreeImage ) * padding;
 
                 for (ImageSize imageSize : imageSizeThree) {
                     try {
                         LOGGER.info("Уменьшаем по ширине " + imageSize.path);
-                        resizeFile(imageSize.path, k2);
+                        resizeImageByRatio(imageSize.path, kScalable);
                     } catch (IOException e) {
                         LOGGER.info("Не удалось изменить масштаб по ширине " + imageSize.path);
                         e.printStackTrace();
@@ -158,16 +165,15 @@ public class Main {
         }
     }
 
-    static void PdfToJPG(List<File> filesInDir) {
+    static void PdfToJPG(List<File> listPdfFiles) {
         int countPage = 0;
-        for (File filesName : filesInDir) {
-            converterPdf.toJPG(filesName.getPath(), "images" + File.separator + "" + countPage);
+        for (File fileName : listPdfFiles) {
+            converterPdf.toJPG(fileName.getPath(), "images" + File.separator + "" + countPage);
             countPage++;
-
         }
     }
 
-    static void createGreyImages(List<File> images) {
+    static void processingImagesToShadesOfGrey(List<File> images) {
         for (File imageFileName : images) {
             createGreyImage(imageFileName.getPath());
         }
@@ -200,7 +206,6 @@ public class Main {
             // Создаем новое пустое изображение, такого же размера
             BufferedImage result = new BufferedImage(source.getWidth(), source.getHeight(), source.getType());
 
-
             // Делаем двойной цикл, чтобы обработать каждый пиксель
             for (int x = 0; x < source.getWidth(); x++) {
                 for (int y = 0; y < source.getHeight(); y++) {
@@ -216,9 +221,6 @@ public class Main {
                     // Применяем стандартный алгоритм для получения черно-белого изображения
                     int grey = (int) (red * 0.299 + green * 0.587 + blue * 0.114);
 
-                    // Если вы понаблюдаете, то заметите что у любого оттенка серого цвета, все каналы имеют
-                    // одно и то же значение. Так, как у нас изображение тоже будет состоять из оттенков серого
-                    // то, все каналы будут иметь одно и то же значение.
                     int newRed = grey;
                     int newGreen = grey;
                     int newBlue = grey;
@@ -243,10 +245,9 @@ public class Main {
         }
     }
 
-    private static BufferedImage getContrastAndBrightnessImage(BufferedImage result) {
+    private static BufferedImage getContrastAndBrightnessImage(BufferedImage image) {
         RescaleOp rescaleOp = new RescaleOp(brightness, contrast, null);
-        BufferedImage filter = rescaleOp.filter(result, result);// Source and destination are the same.
-        return filter;
+        return rescaleOp.filter(image, image);
     }
 
 
@@ -259,9 +260,9 @@ public class Main {
                 // Берем цвет пикселя чека
                 Color color = check[x][y].color;
 
-                int incrementCheck = (numberCheck - 1) * A4_WIDTH / 3;
+                int incrementCheck = (numberCheck - 1) * WIDTH_PAGE / 3;
 
-                int indent = (int) (A4_WIDTH - (padding * A4_WIDTH)) /4;
+                int indent = (int) (WIDTH_PAGE - (padding * WIDTH_PAGE)) /4;
                 int indentX = x + incrementCheck + indent;
                 // И устанавливаем этот цвет в текущий пиксель
                 result.setRGB(indentX, y, color.getRGB());
@@ -280,18 +281,18 @@ public class Main {
         }
     }
 
-    static void putImageToA4(List<Pixel[][]> threeChecks) {
+    static void putChecksOnPage(List<Pixel[][]> threeChecks) {
         // Открываем изображение
-        LOGGER.info("Вставка чека в образец А4 ");
+        LOGGER.info("Вставка трех чеков в лист");
 
         try {
             // Создаем новое пустое изображение, такого же размера
-            BufferedImage result = new BufferedImage(A4_WIDTH, A4_HEIGHT, 5);
+            BufferedImage result = new BufferedImage(WIDTH_PAGE, HEIGHT_PAGE, 5);
 
             blackInWhite(result);
 
             int numberCheck = 1;
-            String pathname = getNameForNextA4Page(numberPageA4ForPrint);
+            String pathname = getNameForNextPage(numberPageForPrint);
 
             File output = new File(pathname);
             for (int i = 0; i < threeChecks.size(); i++) {
@@ -300,27 +301,25 @@ public class Main {
 
                 if (i == threeChecks.size() - 1) {
                     ImageIO.write(result, "jpg", output);
-                    numberPageA4ForPrint++;
-                    output = new File(getNameForNextA4Page(numberPageA4ForPrint));
-                    result = new BufferedImage(A4_WIDTH, A4_HEIGHT, 5);
+                    numberPageForPrint++;
+                    output = new File(getNameForNextPage(numberPageForPrint));
+                    result = new BufferedImage(WIDTH_PAGE, HEIGHT_PAGE, 5);
                     numberCheck = 1;
                 }
 
                 numberCheck++;
             }
-
-
         } catch (IOException e) {
-            LOGGER.info("Не удалось сохранить результат в новый файл А4");
+            LOGGER.info("Не удалось сохранить чеки на странице");
             e.printStackTrace();
         }
     }
 
-    private static String getNameForNextA4Page(int numberPageA4ForPrint) {
+    private static String getNameForNextPage(int numberPageA4ForPrint) {
         return "imageForPrint" + File.separator + "print-" + numberPageA4ForPrint + ".jpg";
     }
 
-    static Pixel[][] copyCheckToArrayPixels(String filename) {
+    static Pixel[][] getArrayPixels(String filename) {
         // Открываем изображение
         LOGGER.info("Копируем изображение в массив пикселей " + filename);
         File check = new File(filename);
@@ -339,17 +338,15 @@ public class Main {
                     array[x][y] = new Pixel(x, y, pixel);
                 }
             }
-
         } catch (IOException e) {
             LOGGER.info("Не удалось скопировать изображение в массив пикселей " + filename);
             e.printStackTrace();
         }
 
-
         return array;
     }
 
-    public static void resizeFile(String imagePath, float kScalable)
+    public static void resizeImageByRatio(String imagePath, float kScalable)
             throws IOException {
 
         LOGGER.info("Масштабируем изображение " + imagePath + " с коэффициентом" + kScalable);
