@@ -6,6 +6,7 @@ import ru.print.check.converter.ConverterPdfToImage;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -21,6 +22,8 @@ public class Main {
     public static final int A4_WIDTH = 2480;//2480;//1240
     public static int numberPageA4ForPrint = 1;
     public static float padding = 0.9f;
+    public static float brightness = 4f;
+    public static float contrast = -700f;
 
     public static void main(String[] args) {
 
@@ -230,12 +233,22 @@ public class Main {
 
             // Сохраняем результат в новый файл
             File output = new File(filename);
-            ImageIO.write(result, "jpg", output);
+
+            BufferedImage processedImage = getContrastAndBrightnessImage(result);
+
+            ImageIO.write(processedImage, "jpg", output);
 
         } catch (IOException e) {
             LOGGER.info("Не удалось преобразовать в оттенки серого файл " + filename);
         }
     }
+
+    private static BufferedImage getContrastAndBrightnessImage(BufferedImage result) {
+        RescaleOp rescaleOp = new RescaleOp(brightness, contrast, null);
+        BufferedImage filter = rescaleOp.filter(result, result);// Source and destination are the same.
+        return filter;
+    }
+
 
     static void putImageInPage(Pixel[][] check, int numberCheck, BufferedImage result) {
 
