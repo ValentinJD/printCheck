@@ -21,4 +21,12 @@ public class FileUtil {
 
         return files;
     }
+
+    private static int countPage = 0;
+
+    public static String getDestFile() {
+        String path = "images" + File.separator + "" + countPage;
+        countPage++;
+        return path;
+    }
 }

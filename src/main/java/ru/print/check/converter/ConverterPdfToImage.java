@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static ru.print.check.util.FileUtil.getDestFile;
 import static ru.print.check.util.FileUtil.getFilesInDir;
 
 public class ConverterPdfToImage implements ConverterPdf {
@@ -17,8 +18,14 @@ public class ConverterPdfToImage implements ConverterPdf {
     Logger LOGGER = Logger.getLogger(getClass().getName());
 
     @Override
-    public void toJPG(String sourceFileName, String destFileName) {
+    public void convertPdfToJPG() {
+        List<File> filesInDir = getFilesInDir("pdfs/");
+        for (File fileName : filesInDir) {
+            toJPG(fileName.getPath(), getDestFile());
+        }
+    }
 
+    private void toJPG(String sourceFileName, String destFileName) {
         try {
             PDDocument document = PDDocument.loadNonSeq(new File(sourceFileName), null);
 
@@ -43,20 +50,6 @@ public class ConverterPdfToImage implements ConverterPdf {
         } catch (IOException e) {
             LOGGER.info(" Не удалось преобразовать файл пдф в JPG: " + sourceFileName);
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void convertPdfToJPG() {
-        List<File> filesInDir = getFilesInDir("pdfs/");
-        PdfToJPG(filesInDir);
-    }
-
-    private void PdfToJPG(List<File> listPdfFiles) {
-        int countPage = 0;
-        for (File fileName : listPdfFiles) {
-            toJPG(fileName.getPath(), "images" + File.separator + "" + countPage);
-            countPage++;
         }
     }
 }

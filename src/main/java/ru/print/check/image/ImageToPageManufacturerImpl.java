@@ -16,10 +16,6 @@ import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 import static ru.print.check.config.ValuesForConfig.*;
 
 public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
-    @Override
-    public void putImagesToPage(Map<Integer, List<ImageSize>> groupByThreeImageMap) {
-        putThreeCheckOnPage(groupByThreeImageMap);
-    }
 
     private static void putImageInPage(Pixel[][] check, int numberCheck, BufferedImage result) {
 
