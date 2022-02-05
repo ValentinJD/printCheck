@@ -11,13 +11,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
+
 import static ru.print.check.config.ValuesForConfig.HEIGHT_PAGE;
-import static ru.print.check.config.ValuesForConfig.WIDTH_PAGE;
 import static ru.print.check.util.FileUtil.getFilesInDir;
 
 public class ImageSizeFitterImpl implements ImageSizeFitter {
+
+    private final Logger LOGGER = Logger.getLogger(getClass().getName());
 
     @Override
     public Map<Integer, List<ImageSize>> getGroupByThreeImageSizeMap() {

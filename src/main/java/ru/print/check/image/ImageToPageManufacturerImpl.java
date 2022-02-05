@@ -24,7 +24,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
         }
     }
 
-    private static void putImageInPage(Pixel[][] check, int numberCheck, BufferedImage result) {
+    private void putImageInPage(Pixel[][] check, int numberCheck, BufferedImage result) {
 
         // Делаем двойной цикл, чтобы пройти по файлу чеку
         for (int x = 1; x < check.length; x++) {
@@ -43,7 +43,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
         }
     }
 
-    private static void putChecksOnPage(List<Pixel[][]> threeChecks) {
+    private void putChecksOnPage(List<Pixel[][]> threeChecks) {
         // Открываем изображение
         LOGGER.info("Вставка трех чеков в лист");
 
@@ -77,11 +77,11 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
         }
     }
 
-    private static String getNameForNextPage(int numberPageA4ForPrint) {
+    private String getNameForNextPage(int numberPageA4ForPrint) {
         return "imageForPrint" + File.separator + "print-" + numberPageA4ForPrint + ".jpg";
     }
 
-    private static void blackInWhite(BufferedImage source) {
+    private void blackInWhite(BufferedImage source) {
 
         // Делаем двойной цикл, чтобы обработать каждый пиксель
         for (int x = 0; x < source.getWidth(); x++) {
@@ -92,7 +92,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
         }
     }
 
-    private static void putListImages(List<ImageSize> threeProcessedCheques) {
+    private void putListImages(List<ImageSize> threeProcessedCheques) {
 
         List<Pixel[][]> threeChecks = new ArrayList<>();
 
@@ -104,7 +104,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
         putChecksOnPage(threeChecks);
     }
 
-    private static Pixel[][] getArrayPixels(String filename) {
+    private Pixel[][] getArrayPixels(String filename) {
         // Открываем изображение
         LOGGER.info("Копируем изображение в массив пикселей " + filename);
         File check = new File(filename);

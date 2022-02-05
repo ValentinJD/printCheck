@@ -7,20 +7,24 @@ import java.awt.image.RescaleOp;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 import static ru.print.check.config.ValuesForConfig.brightness;
 import static ru.print.check.config.ValuesForConfig.contrast;
 import static ru.print.check.util.FileUtil.getFilesInDir;
 
 public class ColourImageEditorImpl implements ColourImageEditor{
+
+
+    private final Logger LOGGER = Logger.getLogger(getClass().getName());
+
     @Override
     public void editColourImage() {
         List<File> images = getFilesInDir("images/");
         processingImagesToShadesOfGrey(images);
     }
 
-    private static void createGreyImage(String filename) {
+    private void createGreyImage(String filename) {
         try {
 
             // Открываем изображение
@@ -70,12 +74,12 @@ public class ColourImageEditorImpl implements ColourImageEditor{
         }
     }
 
-    private static BufferedImage getContrastAndBrightnessImage(BufferedImage image) {
+    private BufferedImage getContrastAndBrightnessImage(BufferedImage image) {
         RescaleOp rescaleOp = new RescaleOp(brightness, contrast, null);
         return rescaleOp.filter(image, image);
     }
 
-    private static void processingImagesToShadesOfGrey(List<File> images) {
+    private void processingImagesToShadesOfGrey(List<File> images) {
         for (File imageFileName : images) {
             createGreyImage(imageFileName.getPath());
         }
