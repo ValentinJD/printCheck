@@ -1,4 +1,4 @@
-package ru.print.check;
+package ru.print.check.model;
 
 import java.awt.*;
 
