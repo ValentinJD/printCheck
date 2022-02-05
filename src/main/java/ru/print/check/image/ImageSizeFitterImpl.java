@@ -19,13 +19,6 @@ import static ru.print.check.util.FileUtil.getFilesInDir;
 
 public class ImageSizeFitterImpl implements ImageSizeFitter {
 
-
-    @Override
-    public List<ImageSize> fitImageSizeToPage() {
-        List<File> greyImages = getFilesInDir("images/");
-        return reSizeImagesOnHeight(greyImages);
-    }
-
     @Override
     public Map<Integer, List<ImageSize>> getGroupByThreeImageSizeMap() {
         List<ImageSize> imageSizeList = fitImageSizeToPage();
@@ -55,7 +48,7 @@ public class ImageSizeFitterImpl implements ImageSizeFitter {
         return groupingMap;
     }
 
-    private static void fitImageOnHeight(String imagePathToRead, int height) throws IOException {
+    private void fitImageOnHeight(String imagePathToRead, int height) throws IOException {
         float kScalable = 1;
         // Масштабируем по высоте если нужно
         if (height > HEIGHT_PAGE) {
@@ -64,7 +57,7 @@ public class ImageSizeFitterImpl implements ImageSizeFitter {
         resizeImageByRatio(imagePathToRead, kScalable);
     }
 
-    private static void resizeImageByRatio(String imagePath, float kScalable)
+    private void resizeImageByRatio(String imagePath, float kScalable)
             throws IOException {
 
         LOGGER.info("Масштабируем изображение " + imagePath + " с коэффициентом" + kScalable);
@@ -87,7 +80,7 @@ public class ImageSizeFitterImpl implements ImageSizeFitter {
         ImageIO.write(bufferedImageOutput, formatName, new File(imagePath));
     }
 
-    private static void getImageSizeList(List<File> images, List<ImageSize> imageSizes) {
+    private void getImageSizeList(List<File> images, List<ImageSize> imageSizes) {
         try {
             for (File image : images) {
                 LOGGER.info("Масштабируем файл: " + image.getPath());
@@ -110,7 +103,7 @@ public class ImageSizeFitterImpl implements ImageSizeFitter {
         }
     }
 
-    private static ImageSize getImageSize(File grey, int height, int width) {
+    private ImageSize getImageSize(File grey, int height, int width) {
         ImageSize imageSize = new ImageSize();
         imageSize.height = height;
         imageSize.width = width;
@@ -118,11 +111,16 @@ public class ImageSizeFitterImpl implements ImageSizeFitter {
         return imageSize;
     }
 
-    private static List<ImageSize> reSizeImagesOnHeight(List<File> images) {
+    private List<ImageSize> reSizeImagesOnHeight(List<File> images) {
         List<ImageSize> imageSizes = new ArrayList<>();
 
         getImageSizeList(images, imageSizes);
 
         return imageSizes;
+    }
+
+    private List<ImageSize> fitImageSizeToPage() {
+        List<File> greyImages = getFilesInDir("images/");
+        return reSizeImagesOnHeight(greyImages);
     }
 }

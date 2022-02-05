@@ -17,6 +17,13 @@ import static ru.print.check.config.ValuesForConfig.*;
 
 public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
 
+    @Override
+    public void putThreeCheckOnPage(Map<Integer, List<ImageSize>> groupsOnThreeCheck) {
+        for (List<ImageSize> threeChecks : groupsOnThreeCheck.values()) {
+            putListImages(threeChecks);
+        }
+    }
+
     private static void putImageInPage(Pixel[][] check, int numberCheck, BufferedImage result) {
 
         // Делаем двойной цикл, чтобы пройти по файлу чеку
@@ -122,11 +129,5 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
         }
 
         return array;
-    }
-
-    public void putThreeCheckOnPage(Map<Integer, List<ImageSize>> groupsOnThreeCheck) {
-        for (List<ImageSize> threeChecks : groupsOnThreeCheck.values()) {
-            putListImages(threeChecks);
-        }
     }
 }

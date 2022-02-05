@@ -6,7 +6,5 @@ import java.util.List;
 import java.util.Map;
 
 public interface ImageSizeFitter {
-    List<ImageSize> fitImageSizeToPage();
-
     Map<Integer, List<ImageSize>> getGroupByThreeImageSizeMap();
 }
