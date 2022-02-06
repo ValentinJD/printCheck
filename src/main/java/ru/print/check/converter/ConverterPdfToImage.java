@@ -12,9 +12,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
-import static ru.print.check.util.FileUtil.getDestFile;
 import static ru.print.check.util.FileUtil.getFilesInDir;
 
 public class ConverterPdfToImage implements ConverterPdf {
@@ -25,10 +25,13 @@ public class ConverterPdfToImage implements ConverterPdf {
 
     Logger LOGGER = Logger.getLogger(getClass().getName());
 
+    public static CountDownLatch countDownLatch;
+
     @Override
     public void convertPdfToJPG() {
         List<File> filesInDir = getFilesInDir("pdfs/");
         imageList = new CopyOnWriteArrayList<>(filesInDir);
+        countDownLatch = new CountDownLatch(imageList.size());
         for (File fileName : imageList) {
             addPdfToImageTask(fileName);
         }
@@ -64,15 +67,24 @@ public class ConverterPdfToImage implements ConverterPdf {
     }
 
     private void addPdfToImageTask(File fileName) {
-        PdfToImageTask task = new PdfToImageTask(this, fileName);
+        PdfToImageTask task = new PdfToImageTask(this, fileName, countDownLatch);
         queueTask.addTask(task);
-
     }
 
     private void runThreads() {
         ConcurrentLinkedQueue<PdfToImageTask> queue = queueTask.getQueue();
-        PdfToImageTask task = queue.poll();
-       Thread thread = new Thread(task);
-        thread.start();
+
+        for (PdfToImageTask task : queue) {
+            task = queue.poll();
+            Thread thread = new Thread(task);
+            thread.setName("Поток pdf to jpg " + task.getFile().getPath());
+            thread.start();
+        }
+
+        System.out.println("Ждем выполнение всех потоков");
+        while (countDownLatch.getCount() != 0) {
+
+        }
+        System.out.println("Потоки выполнили работу");
     }
 }
