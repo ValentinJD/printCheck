@@ -1,21 +1,19 @@
 package ru.print.check;
 
+import java.time.LocalTime;
+
 public class PrintCheckApp {
     public static void main(String[] args) throws InterruptedException {
+
+        LocalTime start = LocalTime.now();
         System.out.println("Имя основного потока" + "\n" +
                 Thread.currentThread().getName()  + "\n" + "старт программы");
         ImagePageFactory imagePageFactory = new ImagePageFactory();
         imagePageFactory.createPagesForPrint();
-        System.out.println("Имя основного потока" + "\n" +
-                Thread.currentThread().getName() +  "\n" + "окончание программы");
 
-/*        while (true) {
-            System.out.println("Мейн работает");
-            Thread.sleep(5000);
-            for (int i = 0; i < 1000000; i++) {
-                int o = i + 950;
-                System.out.println("Вычисляем");
-            }
-        }*/
+        LocalTime end = LocalTime.now();
+        System.out.println("старт" + start);
+        System.out.println("финиш" + end);
+
     }
 }
