@@ -15,7 +15,6 @@ import static ru.print.check.util.FileUtil.getFilesInDir;
 
 public class ColourImageEditorImpl implements ColourImageEditor{
 
-
     private final Logger LOGGER = Logger.getLogger(getClass().getName());
 
     @Override
