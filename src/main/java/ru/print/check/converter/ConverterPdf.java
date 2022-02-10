@@ -2,5 +2,5 @@ package ru.print.check.converter;
 
 public interface ConverterPdf {
 
-    void convertPdfToJPG();
+    void convertPdfToJPG(String sourceFileName, String destFileName);
 }
