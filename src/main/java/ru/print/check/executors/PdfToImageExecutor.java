@@ -21,7 +21,7 @@ public class PdfToImageExecutor {
     public void execute() throws InterruptedException {
         addAllPdfToImageTaskInList();
 
-        ExecutorService service = Executors.newFixedThreadPool(2);
+        ExecutorService service = Executors.newFixedThreadPool(3);
 
         for (PdfToImageTask task: queueTask) {
             service.submit(task);
@@ -39,6 +39,6 @@ public class PdfToImageExecutor {
     }
 
     private PdfToImageTask getPdfToImageTask(File fileName) {
-        return new PdfToImageTask(converterPdf, fileName, countDownLatch);
+        return new PdfToImageTask(new ConverterPdfToImage(), fileName, countDownLatch);
     }
 }

@@ -1,11 +1,8 @@
 package ru.print.check.executors;
 
-import ru.print.check.converter.ConverterPdf;
-import ru.print.check.converter.ConverterPdfToImage;
 import ru.print.check.image.ColourImageEditor;
 import ru.print.check.image.ColourImageEditorImpl;
 import ru.print.check.tasks.ColourImageEditorTask;
-import ru.print.check.tasks.PdfToImageTask;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,7 +22,7 @@ public class ColourImageEditorExecutor {
     private CountDownLatch countDownLatch;
 
     public void execute() throws InterruptedException {
-        addAllPdfToImageTaskInList();
+        addAllImageTaskInList();
 
         ExecutorService service = Executors.newFixedThreadPool(2);
 
@@ -37,14 +34,14 @@ public class ColourImageEditorExecutor {
         service.shutdown();
     }
 
-    private void addAllPdfToImageTaskInList() {
+    private void addAllImageTaskInList() {
         countDownLatch = new CountDownLatch(imageList.size());
         for (File fileName : imageList) {
-            queueTask.add(getPdfToImageTask(fileName));
+            queueTask.add(getColourImageEditorTask(fileName));
         }
     }
 
-    private ColourImageEditorTask getPdfToImageTask(File fileName) {
+    private ColourImageEditorTask getColourImageEditorTask(File fileName) {
         return new ColourImageEditorTask(colourImageEditor, fileName, countDownLatch);
     }
 }

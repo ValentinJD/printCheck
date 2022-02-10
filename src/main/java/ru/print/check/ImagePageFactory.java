@@ -1,9 +1,11 @@
 package ru.print.check;
 
+import ru.print.check.executors.ColourImageEditorExecutor;
 import ru.print.check.executors.PdfToImageExecutor;
 import ru.print.check.image.*;
 import ru.print.check.model.ImageSize;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -11,27 +13,49 @@ import java.util.concurrent.ExecutionException;
 public class ImagePageFactory {
 
     private PdfToImageExecutor pdfToImageExecutor = new PdfToImageExecutor();
-    private ColourImageEditor colourImageEditor;
+    private ColourImageEditorExecutor colourImageEditorExecutor = new ColourImageEditorExecutor();
     private ImageSizeFitter imageSizeFitter;
     private ImageToPageManufacturer imageToPageManufacturer;
 
-    public ImagePageFactory(ColourImageEditor colourImageEditor,
-                            ImageSizeFitter imageSizeFitter, ImageToPageManufacturer imageToPageManufacturer) {
-        this.colourImageEditor = colourImageEditor;
+    public ImagePageFactory(ImageSizeFitter imageSizeFitter, ImageToPageManufacturer imageToPageManufacturer) {
         this.imageSizeFitter = imageSizeFitter;
         this.imageToPageManufacturer = imageToPageManufacturer;
     }
 
     public ImagePageFactory() {
-        this(new ColourImageEditorImpl(), new ImageSizeFitterImpl(),
+        this(new ImageSizeFitterImpl(),
                 new ImageToPageManufacturerImpl());
     }
 
     public void createPagesForPrint() throws ExecutionException, InterruptedException {
+        Long start = new Date().getTime();
         pdfToImageExecutor.execute();
-
-        colourImageEditor.editColourImage();
+        Long end = new Date().getTime();
+        result = end - start;
+        Long start2 = new Date().getTime();
+        colourImageEditorExecutor.execute();
+        Long end2 = new Date().getTime();
+        result2 = end2 - start2;
+        Long start3 = new Date().getTime();
         Map<Integer, List<ImageSize>> groupByThreeImageMap = imageSizeFitter.getGroupByThreeImageSizeMap();
         imageToPageManufacturer.putThreeCheckOnPage(groupByThreeImageMap);
+        Long end3 = new Date().getTime();
+        result3 = end3 - start3;
+    }
+
+    private long result;
+    private long result2;
+    private long result3;
+
+    public long getTime() {
+        return result;
+    }
+
+    public long getTime2() {
+        return result2;
+    }
+
+    public long getTime3() {
+        return result3;
     }
 }
