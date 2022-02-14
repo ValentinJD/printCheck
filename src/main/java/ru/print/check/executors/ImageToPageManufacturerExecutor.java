@@ -24,7 +24,7 @@ public class ImageToPageManufacturerExecutor {
 
     public void execute() throws InterruptedException {
         addAllTasks(groupsOnThreeCheck);
-        ExecutorService service = Executors.newFixedThreadPool(groupsOnThreeCheck.size());
+        ExecutorService service = Executors.newFixedThreadPool(3);
         for (ImageToPageManufacturerTask task : queueTask) {
             service.submit(task);
         }

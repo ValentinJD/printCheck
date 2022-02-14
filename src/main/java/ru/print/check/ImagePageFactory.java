@@ -18,16 +18,14 @@ public class ImagePageFactory {
     public void createPagesForPrint() throws InterruptedException {
         final Long start = new Date().getTime();
         pdfToImageExecutor.execute();
-        latch = pdfToImageExecutor.getCountDownLatch();
-        latch.await();
         final Long end = new Date().getTime();
         result = end - start;
+
         final Long start2 = new Date().getTime();
         colourImageEditorExecutor.execute();
-        latch = colourImageEditorExecutor.getCountDownLatch();
-        latch.await();
         final Long end2 = new Date().getTime();
         result2 = end2 - start2;
+
         final Long start3 = new Date().getTime();
         imageExecutor = new ImageToPageManufacturerExecutor();
         imageExecutor.execute();

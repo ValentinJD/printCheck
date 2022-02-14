@@ -18,10 +18,6 @@ public class PdfToImageExecutor {
     private final List<PdfToImageTask> queueTask = new ArrayList<>();
     private CountDownLatch countDownLatch;
 
-    public CountDownLatch getCountDownLatch() {
-        return countDownLatch;
-    }
-
     public void execute() throws InterruptedException {
         addAllPdfToImageTaskInList();
 
@@ -35,10 +31,6 @@ public class PdfToImageExecutor {
         service.shutdown();
     }
 
-
-
-
-
     private void addAllPdfToImageTaskInList() {
         countDownLatch = new CountDownLatch(imageList.size());
         for (File fileName : imageList) {
@@ -47,6 +39,6 @@ public class PdfToImageExecutor {
     }
 
     private PdfToImageTask getPdfToImageTask(File fileName) {
-        return new PdfToImageTask(new ConverterPdfToImage(), fileName, countDownLatch);
+        return new PdfToImageTask(converterPdf, fileName, countDownLatch);
     }
 }
