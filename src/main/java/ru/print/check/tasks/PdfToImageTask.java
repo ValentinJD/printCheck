@@ -24,11 +24,11 @@ public class PdfToImageTask implements Callable<Void> {
     @Override
     public Void call() {
         System.out.println(Thread.currentThread().getName()
-                + "Начал работу");
+                + "ПДФ в jpeg файла" + file.getPath());
         converterPdfToImage.convertPdfToJPG(file.getPath(), FileUtil.getDestFile());
         countDownLatch.countDown();
         System.out.println(Thread.currentThread().getName()
-                + "закончил работу");
+                + "ПДФ в jpeg файла" + file.getPath() + "выполнено");
         return null;
     }
 }

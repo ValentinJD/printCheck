@@ -24,12 +24,11 @@ public class ColourImageEditorExecutor {
     public void execute() throws InterruptedException {
         addAllImageTaskInList();
 
-        ExecutorService service = Executors.newFixedThreadPool(2);
+        ExecutorService service = Executors.newFixedThreadPool(3);
 
         for (ColourImageEditorTask task: queueTask) {
             service.submit(task);
         }
-
         countDownLatch.await();
         service.shutdown();
     }

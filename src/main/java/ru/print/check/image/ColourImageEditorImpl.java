@@ -28,7 +28,7 @@ public class ColourImageEditorImpl implements ColourImageEditor {
 
     @Override
     public void editColourImage(String path, String destFile) {
-        
+        createGreyImage(path);
     }
 
     private void createGreyImage(String filename) {

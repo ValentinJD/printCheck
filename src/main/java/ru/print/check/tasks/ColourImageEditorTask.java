@@ -25,11 +25,12 @@ public class ColourImageEditorTask implements Callable<Void> {
     @Override
     public Void call() {
         System.out.println(Thread.currentThread().getName()
-                + "Начал работу");
+                + "Цветной в ч/б " + file.getPath() + "начало работы");
         colourImageEditor.editColourImage(file.getPath(), FileUtil.getDestFile());
         countDownLatch.countDown();
         System.out.println(Thread.currentThread().getName()
-                + "закончил работу");
+                + "Цветной в ч/б " + file.getPath() + "окончание работы");
+
         return null;
     }
 }

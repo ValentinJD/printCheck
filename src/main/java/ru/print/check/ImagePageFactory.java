@@ -28,18 +28,18 @@ public class ImagePageFactory {
     }
 
     public void createPagesForPrint() throws ExecutionException, InterruptedException {
-        Long start = new Date().getTime();
+       final Long start = new Date().getTime();
         pdfToImageExecutor.execute();
-        Long end = new Date().getTime();
+       final Long end = new Date().getTime();
         result = end - start;
-        Long start2 = new Date().getTime();
+       final Long start2 = new Date().getTime();
         colourImageEditorExecutor.execute();
-        Long end2 = new Date().getTime();
+       final Long end2 = new Date().getTime();
         result2 = end2 - start2;
-        Long start3 = new Date().getTime();
+      final   Long start3 = new Date().getTime();
         Map<Integer, List<ImageSize>> groupByThreeImageMap = imageSizeFitter.getGroupByThreeImageSizeMap();
         imageToPageManufacturer.putThreeCheckOnPage(groupByThreeImageMap);
-        Long end3 = new Date().getTime();
+       final Long end3 = new Date().getTime();
         result3 = end3 - start3;
     }
 
