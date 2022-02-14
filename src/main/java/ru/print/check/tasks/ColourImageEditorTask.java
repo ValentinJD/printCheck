@@ -1,6 +1,5 @@
 package ru.print.check.tasks;
 
-import ru.print.check.converter.ConverterPdf;
 import ru.print.check.image.ColourImageEditor;
 import ru.print.check.util.FileUtil;
 

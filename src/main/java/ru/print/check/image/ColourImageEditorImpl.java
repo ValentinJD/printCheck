@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 
 import static ru.print.check.config.ValuesForConfig.brightness;
 import static ru.print.check.config.ValuesForConfig.contrast;
-import static ru.print.check.util.FileUtil.getFilesInDir;
 
 public class ColourImageEditorImpl implements ColourImageEditor {
 
@@ -19,12 +18,6 @@ public class ColourImageEditorImpl implements ColourImageEditor {
 
 
     private final Logger LOGGER = Logger.getLogger(getClass().getName());
-
-    @Override
-    public void editColourImage() {
-        List<File> images = getFilesInDir("images/");
-        processingImagesToShadesOfGrey(images);
-    }
 
     @Override
     public void editColourImage(String path, String destFile) {
