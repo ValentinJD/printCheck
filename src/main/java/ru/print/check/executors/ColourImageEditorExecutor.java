@@ -19,6 +19,11 @@ public class ColourImageEditorExecutor {
     private final ColourImageEditor colourImageEditor = new ColourImageEditorImpl();
     private final List<File> imageList = new CopyOnWriteArrayList<>(getFilesInDir("images/"));
     private final List<ColourImageEditorTask> queueTask = new ArrayList<>();
+
+    public CountDownLatch getCountDownLatch() {
+        return countDownLatch;
+    }
+
     private CountDownLatch countDownLatch;
 
     public void execute() throws InterruptedException {

@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 import static ru.print.check.config.ValuesForConfig.*;
@@ -18,10 +17,8 @@ import static ru.print.check.config.ValuesForConfig.*;
 public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
 
     @Override
-    public void putThreeCheckOnPage(Map<Integer, List<ImageSize>> groupsOnThreeCheck) {
-        for (List<ImageSize> threeChecks : groupsOnThreeCheck.values()) {
-            putListImages(threeChecks);
-        }
+    public synchronized void putThreeCheckOnPage(List<ImageSize> threeChecks) {
+        putListImages(threeChecks);
     }
 
     private void putImageInPage(Pixel[][] check, int numberCheck, BufferedImage result) {
@@ -54,7 +51,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
             blackInWhite(result);
 
             int numberCheck = 1;
-            String pathname = getNameForNextPage(numberPageForPrint);
+            String pathname = getNameForNextPage(numberPageForPrint.get());
 
             File output = new File(pathname);
             for (int i = 0; i < threeChecks.size(); i++) {
@@ -63,8 +60,8 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
 
                 if (i == threeChecks.size() - 1) {
                     ImageIO.write(result, "jpg", output);
-                    numberPageForPrint++;
-                    output = new File(getNameForNextPage(numberPageForPrint));
+                    numberPageForPrint.incrementAndGet();
+                    output = new File(getNameForNextPage(numberPageForPrint.get()));
                     result = new BufferedImage(WIDTH_PAGE, HEIGHT_PAGE, 5);
                     numberCheck = 1;
                 }

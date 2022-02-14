@@ -1,45 +1,37 @@
 package ru.print.check;
 
 import ru.print.check.executors.ColourImageEditorExecutor;
+import ru.print.check.executors.ImageToPageManufacturerExecutor;
 import ru.print.check.executors.PdfToImageExecutor;
-import ru.print.check.image.*;
-import ru.print.check.model.ImageSize;
+import ru.print.check.image.ImageSizeFitter;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CountDownLatch;
 
 public class ImagePageFactory {
 
     private PdfToImageExecutor pdfToImageExecutor = new PdfToImageExecutor();
     private ColourImageEditorExecutor colourImageEditorExecutor = new ColourImageEditorExecutor();
-    private ImageSizeFitter imageSizeFitter;
-    private ImageToPageManufacturer imageToPageManufacturer;
+    private ImageToPageManufacturerExecutor imageExecutor;
+    private CountDownLatch latch;
 
-    public ImagePageFactory(ImageSizeFitter imageSizeFitter, ImageToPageManufacturer imageToPageManufacturer) {
-        this.imageSizeFitter = imageSizeFitter;
-        this.imageToPageManufacturer = imageToPageManufacturer;
-    }
-
-    public ImagePageFactory() {
-        this(new ImageSizeFitterImpl(),
-                new ImageToPageManufacturerImpl());
-    }
-
-    public void createPagesForPrint() throws ExecutionException, InterruptedException {
-       final Long start = new Date().getTime();
+    public void createPagesForPrint() throws InterruptedException {
+        final Long start = new Date().getTime();
         pdfToImageExecutor.execute();
-       final Long end = new Date().getTime();
+        latch = pdfToImageExecutor.getCountDownLatch();
+        latch.await();
+        final Long end = new Date().getTime();
         result = end - start;
-       final Long start2 = new Date().getTime();
+        final Long start2 = new Date().getTime();
         colourImageEditorExecutor.execute();
-       final Long end2 = new Date().getTime();
+        latch = colourImageEditorExecutor.getCountDownLatch();
+        latch.await();
+        final Long end2 = new Date().getTime();
         result2 = end2 - start2;
-      final   Long start3 = new Date().getTime();
-        Map<Integer, List<ImageSize>> groupByThreeImageMap = imageSizeFitter.getGroupByThreeImageSizeMap();
-        imageToPageManufacturer.putThreeCheckOnPage(groupByThreeImageMap);
-       final Long end3 = new Date().getTime();
+        final Long start3 = new Date().getTime();
+        imageExecutor = new ImageToPageManufacturerExecutor();
+        imageExecutor.execute();
+        final Long end3 = new Date().getTime();
         result3 = end3 - start3;
     }
 
