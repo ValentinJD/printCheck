@@ -5,9 +5,11 @@ import ru.print.check.converter.ConverterPdfToImage;
 import ru.print.check.tasks.PdfToImageTask;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static ru.print.check.util.FileUtil.getFilesInDir;
 
@@ -15,8 +17,8 @@ public class PdfToImageExecutor {
 
     private final ConverterPdf converterPdf = new ConverterPdfToImage();
     private final List<File> imageList = new CopyOnWriteArrayList<>(getFilesInDir("pdfs/"));
-    private final List<PdfToImageTask> queueTask = new ArrayList<>();
-    private CountDownLatch countDownLatch;
+    private final List<PdfToImageTask> queueTask = new CopyOnWriteArrayList<>();
+    private final CountDownLatch countDownLatch = new CountDownLatch(imageList.size());;
 
     public void execute() throws InterruptedException {
         addAllPdfToImageTaskInList();
@@ -32,7 +34,6 @@ public class PdfToImageExecutor {
     }
 
     private void addAllPdfToImageTaskInList() {
-        countDownLatch = new CountDownLatch(imageList.size());
         for (File fileName : imageList) {
             queueTask.add(getPdfToImageTask(fileName));
         }

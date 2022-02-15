@@ -3,17 +3,14 @@ package ru.print.check;
 import ru.print.check.executors.ColourImageEditorExecutor;
 import ru.print.check.executors.ImageToPageManufacturerExecutor;
 import ru.print.check.executors.PdfToImageExecutor;
-import ru.print.check.image.ImageSizeFitter;
 
 import java.util.Date;
-import java.util.concurrent.CountDownLatch;
 
 public class ImagePageFactory {
 
     private PdfToImageExecutor pdfToImageExecutor = new PdfToImageExecutor();
     private ColourImageEditorExecutor colourImageEditorExecutor = new ColourImageEditorExecutor();
     private ImageToPageManufacturerExecutor imageExecutor;
-    private CountDownLatch latch;
 
     public void createPagesForPrint() throws InterruptedException {
         final Long start = new Date().getTime();

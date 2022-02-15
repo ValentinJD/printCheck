@@ -68,7 +68,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
 
                 numberCheck++;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.info("Не удалось сохранить чеки на странице");
             e.printStackTrace();
         }

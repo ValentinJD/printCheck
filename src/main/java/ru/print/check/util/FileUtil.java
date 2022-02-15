@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class FileUtil {
-    public static List<File> getFilesInDir(String path) {
+    public synchronized static List<File> getFilesInDir(String path) {
         File dir = new File(path); //path указывает на директорию
 
         List<File> files = new ArrayList<>();

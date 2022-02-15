@@ -14,9 +14,6 @@ import static ru.print.check.config.ValuesForConfig.contrast;
 
 public class ColourImageEditorImpl implements ColourImageEditor {
 
-
-
-
     private final Logger LOGGER = Logger.getLogger(getClass().getName());
 
     @Override
@@ -28,7 +25,7 @@ public class ColourImageEditorImpl implements ColourImageEditor {
         try {
 
             // Открываем изображение
-            LOGGER.info("Преобразуем в оттенки серого файл " + filename);
+            LOGGER.info(Thread.currentThread().getName() + "Преобразуем в оттенки серого файл " + filename);
             File file = new File(filename);
             BufferedImage source = ImageIO.read(file);
 
@@ -70,18 +67,12 @@ public class ColourImageEditorImpl implements ColourImageEditor {
             ImageIO.write(processedImage, "jpg", output);
 
         } catch (IOException e) {
-            LOGGER.info("Не удалось преобразовать в оттенки серого файл " + filename);
+            LOGGER.info(Thread.currentThread().getName() + "Не удалось преобразовать в оттенки серого файл " + filename);
         }
     }
 
     private BufferedImage getContrastAndBrightnessImage(BufferedImage image) {
         RescaleOp rescaleOp = new RescaleOp(brightness, contrast, null);
         return rescaleOp.filter(image, image);
-    }
-
-    private void processingImagesToShadesOfGrey(List<File> images) {
-        for (File imageFileName : images) {
-            createGreyImage(imageFileName.getPath());
-        }
     }
 }
