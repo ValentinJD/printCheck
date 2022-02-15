@@ -7,7 +7,6 @@ import ru.print.check.image.ImageToPageManufacturerImpl;
 import ru.print.check.model.ImageSize;
 import ru.print.check.tasks.ImageToPageManufacturerTask;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -21,11 +20,11 @@ public class ImageToPageManufacturerExecutor {
 
     private final ImageToPageManufacturer imageToPageManufacturer = new ImageToPageManufacturerImpl();
     private final List<ImageToPageManufacturerTask> queueTask = new CopyOnWriteArrayList<>();
-    private CountDownLatch countDownLatch;
     private final ImageSizeFitter imageSizeFitter =  new ImageSizeFitterImpl();
-    private final Map<Integer, List<ImageSize>> groupsOnThreeCheck = imageSizeFitter.getGroupByThreeImageSizeMap();
+    private CountDownLatch countDownLatch;
 
     public void execute() throws InterruptedException {
+        Map<Integer, List<ImageSize>> groupsOnThreeCheck = imageSizeFitter.getGroupByThreeImageSizeMap();
         addAllTasks(groupsOnThreeCheck);
         ExecutorService service = Executors.newFixedThreadPool(COUNT_THREADS);
         for (ImageToPageManufacturerTask task : queueTask) {

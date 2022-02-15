@@ -1,16 +1,17 @@
 package ru.print.check;
 
 import java.util.Date;
-import java.util.concurrent.ExecutionException;
 
 public class PrintCheckApp {
-    public static void main(String[] args) throws InterruptedException, ExecutionException {
+    public static void main(String[] args) throws InterruptedException {
 
         Long start = new Date().getTime();
         System.out.println("Имя основного потока" + "\n" +
                 Thread.currentThread().getName()  + "\n" + "старт программы");
+
         ImagePageFactory imagePageFactory = new ImagePageFactory();
         imagePageFactory.createPagesForPrint();
+
         Long end = new Date().getTime();
         Long result = end - start;
         System.out.println("время пдф в jpeg сек," + ((float)imagePageFactory.getTime())/1000);

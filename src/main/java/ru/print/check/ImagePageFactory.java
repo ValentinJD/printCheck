@@ -10,7 +10,7 @@ public class ImagePageFactory {
 
     private PdfToImageExecutor pdfToImageExecutor = new PdfToImageExecutor();
     private ColourImageEditorExecutor colourImageEditorExecutor = new ColourImageEditorExecutor();
-    private ImageToPageManufacturerExecutor imageExecutor;
+    private ImageToPageManufacturerExecutor imageExecutor = new ImageToPageManufacturerExecutor();
 
     public void createPagesForPrint() throws InterruptedException {
         final Long start = new Date().getTime();
@@ -24,7 +24,7 @@ public class ImagePageFactory {
         result2 = end2 - start2;
 
         final Long start3 = new Date().getTime();
-        imageExecutor = new ImageToPageManufacturerExecutor();
+
         imageExecutor.execute();
         final Long end3 = new Date().getTime();
         result3 = end3 - start3;
