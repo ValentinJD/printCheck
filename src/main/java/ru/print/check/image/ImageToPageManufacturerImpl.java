@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
+
 import static ru.print.check.config.ValuesForConfig.*;
 
-public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
+public class ImageToPageManufacturerImpl implements ImageToPageManufacturer {
 
     @Override
     public synchronized void putThreeCheckOnPage(List<ImageSize> threeChecks) {
@@ -32,7 +32,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
 
                 int incrementCheck = (numberCheck - 1) * WIDTH_PAGE / 3;
 
-                int indent = (int) (WIDTH_PAGE - (padding * WIDTH_PAGE)) /4;
+                int indent = (int) (WIDTH_PAGE - (padding * WIDTH_PAGE)) / 4;
                 int indentX = x + incrementCheck + indent;
                 // И устанавливаем этот цвет в текущий пиксель
                 result.setRGB(indentX, y, color.getRGB());
@@ -42,13 +42,11 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
 
     private void putChecksOnPage(List<Pixel[][]> threeChecks) {
         // Открываем изображение
-        LOGGER.info("Вставка трех чеков в лист");
+//        LOGGER.info("Вставка трех чеков в лист");
 
         try {
             // Создаем новое пустое изображение, такого же размера
             BufferedImage result = getExamplePage();
-
-//            blackInWhite(result);
 
             int numberCheck = 1;
             String pathname = getNameForNextPage(numberPageForPrint.get());
@@ -69,7 +67,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
                 numberCheck++;
             }
         } catch (Exception e) {
-            LOGGER.info("Не удалось сохранить чеки на странице");
+//            LOGGER.info("Не удалось сохранить чеки на странице");
             e.printStackTrace();
         }
     }
@@ -84,21 +82,16 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
 
         // Fill the background with white color
         Color rgb = new Color(255, 255, 255);
-        graphics.setColor (rgb);
-        graphics.fillRect ( 0, 0, source.getWidth(), source.getHeight());
+        graphics.setColor(rgb);
+        graphics.fillRect(0, 0, source.getWidth(), source.getHeight());
         return source;
     }
 
-    private BufferedImage image;
-
     private BufferedImage getExamplePage() {
-        if (image == null) {
-            image = new BufferedImage(WIDTH_PAGE, HEIGHT_PAGE, 5);
-            blackInWhite(image);
-            return image;
-        } else {
-            return image;
-        }
+        BufferedImage image;
+        image = new BufferedImage(WIDTH_PAGE, HEIGHT_PAGE, 5);
+        blackInWhite(image);
+        return image;
     }
 
     private void putListImages(List<ImageSize> threeProcessedCheques) {
@@ -115,7 +108,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
 
     private Pixel[][] getArrayPixels(String filename) {
         // Открываем изображение
-        LOGGER.info("Копируем изображение в массив пикселей " + filename);
+//        LOGGER.info("Копируем изображение в массив пикселей " + filename);
         File check = new File(filename);
         Pixel[][] array = null;
 
@@ -133,7 +126,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
                 }
             }
         } catch (IOException e) {
-            LOGGER.info("Не удалось скопировать изображение в массив пикселей " + filename);
+//            LOGGER.info("Не удалось скопировать изображение в массив пикселей " + filename);
             e.printStackTrace();
         }
 
