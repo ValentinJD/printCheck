@@ -11,6 +11,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static ru.print.check.config.ValuesForConfig.COUNT_THREADS;
 import static ru.print.check.util.FileUtil.getFilesInDir;
 
 public class PdfToImageExecutor {
@@ -18,12 +19,12 @@ public class PdfToImageExecutor {
     private final ConverterPdf converterPdf = new ConverterPdfToImage();
     private final List<File> imageList = new CopyOnWriteArrayList<>(getFilesInDir("pdfs/"));
     private final List<PdfToImageTask> queueTask = new CopyOnWriteArrayList<>();
-    private final CountDownLatch countDownLatch = new CountDownLatch(imageList.size());;
+    private final CountDownLatch countDownLatch = new CountDownLatch(imageList.size());
 
     public void execute() throws InterruptedException {
         addAllPdfToImageTaskInList();
 
-        ExecutorService service = Executors.newFixedThreadPool(3);
+        ExecutorService service = Executors.newFixedThreadPool(COUNT_THREADS);
 
         for (PdfToImageTask task: queueTask) {
             service.submit(task);

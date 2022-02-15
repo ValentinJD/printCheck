@@ -15,6 +15,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static ru.print.check.config.ValuesForConfig.COUNT_THREADS;
+
 public class ImageToPageManufacturerExecutor {
 
     private final ImageToPageManufacturer imageToPageManufacturer = new ImageToPageManufacturerImpl();
@@ -25,7 +27,7 @@ public class ImageToPageManufacturerExecutor {
 
     public void execute() throws InterruptedException {
         addAllTasks(groupsOnThreeCheck);
-        ExecutorService service = Executors.newFixedThreadPool(3);
+        ExecutorService service = Executors.newFixedThreadPool(COUNT_THREADS);
         for (ImageToPageManufacturerTask task : queueTask) {
             service.submit(task);
         }

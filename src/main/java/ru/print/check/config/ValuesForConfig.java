@@ -10,4 +10,5 @@ public class ValuesForConfig {
     public static float padding = 0.9f;
     public static float brightness = 4f;
     public static float contrast = -700f;
+    public static int COUNT_THREADS = 3;
 }

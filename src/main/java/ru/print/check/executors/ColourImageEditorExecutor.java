@@ -10,6 +10,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static ru.print.check.config.ValuesForConfig.COUNT_THREADS;
 import static ru.print.check.util.FileUtil.getFilesInDir;
 
 public class ColourImageEditorExecutor {
@@ -23,7 +24,7 @@ public class ColourImageEditorExecutor {
         imageList = new CopyOnWriteArrayList<>(getFilesInDir("images/"));
         addAllImageTaskInList();
 
-        ExecutorService service = Executors.newFixedThreadPool(3);
+        ExecutorService service = Executors.newFixedThreadPool(COUNT_THREADS);
 
         for (ColourImageEditorTask task : queueTask) {
             service.submit(task);
