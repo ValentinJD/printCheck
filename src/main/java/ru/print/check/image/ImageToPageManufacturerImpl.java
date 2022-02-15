@@ -46,9 +46,9 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
 
         try {
             // Создаем новое пустое изображение, такого же размера
-            BufferedImage result = new BufferedImage(WIDTH_PAGE, HEIGHT_PAGE, 5);
+            BufferedImage result = getExamplePage();
 
-            blackInWhite(result);
+//            blackInWhite(result);
 
             int numberCheck = 1;
             String pathname = getNameForNextPage(numberPageForPrint.get());
@@ -78,14 +78,26 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer{
         return "imageForPrint" + File.separator + "print-" + numberPageA4ForPrint + ".jpg";
     }
 
-    private void blackInWhite(BufferedImage source) {
+    private BufferedImage blackInWhite(BufferedImage source) {
+        // Create the image
+        Graphics2D graphics = source.createGraphics();
 
-        // Делаем двойной цикл, чтобы обработать каждый пиксель
-        for (int x = 0; x < source.getWidth(); x++) {
-            for (int y = 0; y < source.getHeight(); y++) {
-                // И устанавливаем белый цвет результирующего изображения
-                source.setRGB(x, y, -1);
-            }
+        // Fill the background with white color
+        Color rgb = new Color(255, 255, 255);
+        graphics.setColor (rgb);
+        graphics.fillRect ( 0, 0, source.getWidth(), source.getHeight());
+        return source;
+    }
+
+    private BufferedImage image;
+
+    private BufferedImage getExamplePage() {
+        if (image == null) {
+            image = new BufferedImage(WIDTH_PAGE, HEIGHT_PAGE, 5);
+            blackInWhite(image);
+            return image;
+        } else {
+            return image;
         }
     }
 
