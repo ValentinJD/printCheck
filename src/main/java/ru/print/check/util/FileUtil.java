@@ -8,10 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class FileUtil {
-    static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
+import static ru.print.check.config.ValuesForConfig.DIR_FOR_IMAGE_FILES;
 
-    public synchronized static List<File> getFilesInDir(String path) {
+public class FileUtil {
+    private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
+
+    private FileUtil() {
+    }
+
+    public static synchronized List<File> getFilesInDir(String path) {
         File dir = new File(path); //path указывает на директорию
 
         List<File> files = new ArrayList<>();
@@ -30,7 +35,7 @@ public class FileUtil {
     private static int countPage = 0;
 
     public static String getDestFile() {
-        String path = "images" + File.separator + "" + countPage;
+        String path = DIR_FOR_IMAGE_FILES + "" + countPage;
         countPage++;
         return path;
     }

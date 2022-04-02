@@ -34,7 +34,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer {
 
                 int incrementCheck = (numberCheck - 1) * WIDTH_PAGE / 3;
 
-                int indent = (int) (WIDTH_PAGE - (padding * WIDTH_PAGE)) / 4;
+                int indent = (int) (WIDTH_PAGE - (PADDING * WIDTH_PAGE)) / 4;
                 int indentX = x + incrementCheck + indent;
                 // И устанавливаем этот цвет в текущий пиксель
                 result.setRGB(indentX, y, color.getRGB());

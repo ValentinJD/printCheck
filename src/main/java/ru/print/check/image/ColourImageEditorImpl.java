@@ -11,8 +11,8 @@ import java.io.File;
 import java.io.IOException;
 
 
-import static ru.print.check.config.ValuesForConfig.brightness;
-import static ru.print.check.config.ValuesForConfig.contrast;
+import static ru.print.check.config.ValuesForConfig.BRIGHTNESS;
+import static ru.print.check.config.ValuesForConfig.CONTRAST;
 
 public class ColourImageEditorImpl implements ColourImageEditor {
 
@@ -49,12 +49,8 @@ public class ColourImageEditorImpl implements ColourImageEditor {
                     // Применяем стандартный алгоритм для получения черно-белого изображения
                     int grey = (int) (red * 0.299 + green * 0.587 + blue * 0.114);
 
-                    int newRed = grey;
-                    int newGreen = grey;
-                    int newBlue = grey;
-
                     //  Создаем новый цвет
-                    Color newColor = new Color(newRed, newGreen, newBlue);
+                    Color newColor = new Color(grey, grey, grey);
 
                     // И устанавливаем этот цвет в текущий пиксель результирующего изображения
                     result.setRGB(x, y, newColor.getRGB());
@@ -74,7 +70,7 @@ public class ColourImageEditorImpl implements ColourImageEditor {
     }
 
     private BufferedImage getContrastAndBrightnessImage(BufferedImage image) {
-        RescaleOp rescaleOp = new RescaleOp(brightness, contrast, null);
+        RescaleOp rescaleOp = new RescaleOp(BRIGHTNESS, CONTRAST, null);
         return rescaleOp.filter(image, image);
     }
 }
