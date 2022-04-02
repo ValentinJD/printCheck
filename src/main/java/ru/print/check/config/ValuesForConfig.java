@@ -11,4 +11,7 @@ public class ValuesForConfig {
     public static float brightness = 4f;
     public static float contrast = -700f;
     public static int COUNT_THREADS = 3;
+    public static final String DIR_FOR_PDF_FILES = "pdfs/";
+    public static final String DIR_FOR_IMAGE_FILES = "images/";
+    public static final String DIR_FOR_PAGE_FOR_PRINT = "imageForPrint/";
 }

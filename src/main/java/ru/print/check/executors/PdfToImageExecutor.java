@@ -12,12 +12,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static ru.print.check.config.ValuesForConfig.COUNT_THREADS;
+import static ru.print.check.config.ValuesForConfig.DIR_FOR_PDF_FILES;
 import static ru.print.check.util.FileUtil.getFilesInDir;
 
 public class PdfToImageExecutor {
 
     private final ConverterPdf converterPdf = new ConverterPdfToImage();
-    private final List<File> imageList = new CopyOnWriteArrayList<>(getFilesInDir("pdfs/"));
+    private final List<File> imageList = new CopyOnWriteArrayList<>(getFilesInDir(DIR_FOR_PDF_FILES));
     private final List<PdfToImageTask> queueTask = new CopyOnWriteArrayList<>();
     private final CountDownLatch countDownLatch = new CountDownLatch(imageList.size());
 

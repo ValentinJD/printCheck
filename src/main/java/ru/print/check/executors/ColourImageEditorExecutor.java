@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static ru.print.check.config.ValuesForConfig.COUNT_THREADS;
+import static ru.print.check.config.ValuesForConfig.DIR_FOR_IMAGE_FILES;
 import static ru.print.check.util.FileUtil.getFilesInDir;
 
 public class ColourImageEditorExecutor {
@@ -21,7 +22,7 @@ public class ColourImageEditorExecutor {
     private CountDownLatch countDownLatch;
 
     public void execute() throws InterruptedException {
-        imageList = new CopyOnWriteArrayList<>(getFilesInDir("images/"));
+        imageList = new CopyOnWriteArrayList<>(getFilesInDir(DIR_FOR_IMAGE_FILES));
         addAllImageTaskInList();
 
         ExecutorService service = Executors.newFixedThreadPool(COUNT_THREADS);

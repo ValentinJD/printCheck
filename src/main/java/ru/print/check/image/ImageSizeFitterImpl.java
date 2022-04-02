@@ -11,15 +11,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+import static ru.print.check.config.ValuesForConfig.DIR_FOR_IMAGE_FILES;
 import static ru.print.check.config.ValuesForConfig.HEIGHT_PAGE;
 import static ru.print.check.util.FileUtil.getFilesInDir;
 
 public class ImageSizeFitterImpl implements ImageSizeFitter {
 
-    private final Logger LOGGER = Logger.getLogger(getClass().getName());
+    private final Logger logger = Logger.getLogger(getClass().getName());
 
     @Override
     public Map<Integer, List<ImageSize>> getGroupByThreeImageSizeMap() {
@@ -62,7 +64,7 @@ public class ImageSizeFitterImpl implements ImageSizeFitter {
     private void resizeImageByRatio(String imagePath, float kScalable)
             throws IOException {
 
-        LOGGER.info("Масштабируем изображение " + imagePath + " с коэффициентом" + kScalable);
+        logger.info("Масштабируем изображение " + imagePath + " с коэффициентом" + kScalable);
 
         File fileToRead = new File(imagePath);
         BufferedImage bufferedImageInput = ImageIO.read(fileToRead);
@@ -85,7 +87,7 @@ public class ImageSizeFitterImpl implements ImageSizeFitter {
     private void getImageSizeList(List<File> images, List<ImageSize> imageSizes) {
         try {
             for (File image : images) {
-                LOGGER.info("Масштабируем файл: " + image.getPath());
+                logger.info("Масштабируем файл: " + image.getPath());
                 // Проверяем высоту
                 String imagePathToRead = image.getPath();
                 File fileToRead = new File(imagePathToRead);
@@ -122,7 +124,7 @@ public class ImageSizeFitterImpl implements ImageSizeFitter {
     }
 
     private List<ImageSize> fitImageSizeToPage() {
-        List<File> greyImages = getFilesInDir("images/");
+        List<File> greyImages = getFilesInDir(DIR_FOR_IMAGE_FILES);
         return reSizeImagesOnHeight(greyImages);
     }
 }

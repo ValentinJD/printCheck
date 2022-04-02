@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 import static ru.print.check.config.ValuesForConfig.*;
 
 public class ImageToPageManufacturerImpl implements ImageToPageManufacturer {
@@ -67,13 +68,13 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer {
                 numberCheck++;
             }
         } catch (Exception e) {
-//            LOGGER.info("Не удалось сохранить чеки на странице");
+            LOGGER.info("Не удалось сохранить чеки на странице");
             e.printStackTrace();
         }
     }
 
     private String getNameForNextPage(int numberPageA4ForPrint) {
-        return "imageForPrint" + File.separator + "print-" + numberPageA4ForPrint + ".jpg";
+        return DIR_FOR_PAGE_FOR_PRINT + "print-" + numberPageA4ForPrint + ".jpg";
     }
 
     private BufferedImage blackInWhite(BufferedImage source) {
