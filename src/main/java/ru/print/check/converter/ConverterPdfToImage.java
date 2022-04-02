@@ -3,16 +3,18 @@ package ru.print.check.converter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.util.ImageIOUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
+
 
 public class ConverterPdfToImage implements ConverterPdf {
 
-    private final Logger LOGGER = Logger.getLogger(getClass().getName());
+    private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     @Override
     public void convertPdfToJPG(String sourceFileName, String destFileName) {
@@ -36,13 +38,13 @@ public class ConverterPdfToImage implements ConverterPdf {
 
                 ImageIOUtil.writeImage(bin, filename, 150);
 
-                LOGGER.info("Преобразование файла пдф в JPG: " + filename);
+                logger.info("Преобразование файла пдф в JPG: {}", filename);
             }
 
             document.close();
 
         } catch (IOException e) {
-            LOGGER.info(" Не удалось преобразовать файл пдф в JPG: " + sourceFileName);
+            logger.info(" Не удалось преобразовать файл пдф в JPG: {}", sourceFileName);
             e.printStackTrace();
         }
     }

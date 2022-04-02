@@ -1,20 +1,22 @@
 package ru.print.check.image;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.logging.Logger;
+
 
 import static ru.print.check.config.ValuesForConfig.brightness;
 import static ru.print.check.config.ValuesForConfig.contrast;
 
 public class ColourImageEditorImpl implements ColourImageEditor {
 
-    private final Logger LOGGER = Logger.getLogger(getClass().getName());
+    private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     @Override
     public void editColourImage(String path, String destFile) {
@@ -25,7 +27,7 @@ public class ColourImageEditorImpl implements ColourImageEditor {
         try {
 
             // Открываем изображение
-            LOGGER.info(Thread.currentThread().getName() + "Преобразуем в оттенки серого файл " + filename);
+            logger.info("{} Преобразуем в оттенки серого файл {}", Thread.currentThread().getName(), filename);
             File file = new File(filename);
             BufferedImage source = ImageIO.read(file);
 
@@ -67,7 +69,7 @@ public class ColourImageEditorImpl implements ColourImageEditor {
             ImageIO.write(processedImage, "jpg", output);
 
         } catch (IOException e) {
-            LOGGER.info(Thread.currentThread().getName() + "Не удалось преобразовать в оттенки серого файл " + filename);
+            logger.info("{} Не удалось преобразовать в оттенки серого файл {}", Thread.currentThread().getName(), filename);
         }
     }
 

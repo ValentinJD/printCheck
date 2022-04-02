@@ -1,5 +1,7 @@
 package ru.print.check.tasks;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.print.check.converter.ConverterPdf;
 import ru.print.check.util.FileUtil;
 
@@ -8,6 +10,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
 public class PdfToImageTask implements Callable<Void> {
+    private final Logger logger = LoggerFactory.getLogger(PdfToImageTask.class);
+
     ConverterPdf converterPdfToImage;
     CountDownLatch countDownLatch;
 
@@ -23,12 +27,10 @@ public class PdfToImageTask implements Callable<Void> {
 
     @Override
     public Void call() {
-        System.out.println(Thread.currentThread().getName()
-                + "ПДФ в jpeg файла" + file.getPath());
+        logger.info("{} ПДФ в jpeg файла {}", Thread.currentThread().getName(), file.getPath());
         converterPdfToImage.convertPdfToJPG(file.getPath(), FileUtil.getDestFile());
         countDownLatch.countDown();
-        System.out.println(Thread.currentThread().getName()
-                + "ПДФ в jpeg файла" + file.getPath() + "выполнено");
+        logger.info("{} ПДФ в jpeg  {}", Thread.currentThread().getName(), file.getPath());
         return null;
     }
 }

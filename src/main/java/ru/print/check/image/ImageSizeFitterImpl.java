@@ -1,5 +1,7 @@
 package ru.print.check.image;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.print.check.model.ImageSize;
 
 import javax.imageio.ImageIO;
@@ -11,8 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 import static ru.print.check.config.ValuesForConfig.DIR_FOR_IMAGE_FILES;
@@ -21,7 +21,7 @@ import static ru.print.check.util.FileUtil.getFilesInDir;
 
 public class ImageSizeFitterImpl implements ImageSizeFitter {
 
-    private final Logger logger = Logger.getLogger(getClass().getName());
+    private final Logger logger = LoggerFactory.getLogger(ImageSizeFitterImpl.class);
 
     @Override
     public Map<Integer, List<ImageSize>> getGroupByThreeImageSizeMap() {
@@ -64,7 +64,7 @@ public class ImageSizeFitterImpl implements ImageSizeFitter {
     private void resizeImageByRatio(String imagePath, float kScalable)
             throws IOException {
 
-        logger.info("Масштабируем изображение " + imagePath + " с коэффициентом" + kScalable);
+        logger.info("Масштабируем изображение {}  с коэффициентом {}", imagePath, kScalable);
 
         File fileToRead = new File(imagePath);
         BufferedImage bufferedImageInput = ImageIO.read(fileToRead);
@@ -87,7 +87,7 @@ public class ImageSizeFitterImpl implements ImageSizeFitter {
     private void getImageSizeList(List<File> images, List<ImageSize> imageSizes) {
         try {
             for (File image : images) {
-                logger.info("Масштабируем файл: " + image.getPath());
+                logger.info("Масштабируем файл: {}", image.getPath());
                 // Проверяем высоту
                 String imagePathToRead = image.getPath();
                 File fileToRead = new File(imagePathToRead);
@@ -102,7 +102,7 @@ public class ImageSizeFitterImpl implements ImageSizeFitter {
                 fitImageOnHeight(imagePathToRead, height);
             }
         } catch (IOException e) {
-            System.out.println("Не удалось уменьшить по высоте страницы файл: ");
+            logger.warn("Не удалось уменьшить по высоте страницы файл: ");
             e.printStackTrace();
         }
     }

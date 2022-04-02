@@ -1,5 +1,7 @@
 package ru.print.check.image;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.print.check.model.ImageSize;
 import ru.print.check.model.Pixel;
 
@@ -11,11 +13,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 import static ru.print.check.config.ValuesForConfig.*;
 
 public class ImageToPageManufacturerImpl implements ImageToPageManufacturer {
+    static final Logger logger = LoggerFactory.getLogger(ImageToPageManufacturerImpl.class);
 
     @Override
     public synchronized void putThreeCheckOnPage(List<ImageSize> threeChecks) {
@@ -43,7 +44,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer {
 
     private void putChecksOnPage(List<Pixel[][]> threeChecks) {
         // Открываем изображение
-//        LOGGER.info("Вставка трех чеков в лист");
+        logger.info("Вставка трех чеков в лист");
 
         try {
             // Создаем новое пустое изображение, такого же размера
@@ -68,7 +69,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer {
                 numberCheck++;
             }
         } catch (Exception e) {
-            LOGGER.info("Не удалось сохранить чеки на странице");
+            logger.info("Не удалось сохранить чеки на странице");
             e.printStackTrace();
         }
     }
@@ -109,7 +110,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer {
 
     private Pixel[][] getArrayPixels(String filename) {
         // Открываем изображение
-//        LOGGER.info("Копируем изображение в массив пикселей " + filename);
+        logger.info("Копируем изображение в массив пикселей {}", filename);
         File check = new File(filename);
         Pixel[][] array = null;
 
@@ -127,7 +128,7 @@ public class ImageToPageManufacturerImpl implements ImageToPageManufacturer {
                 }
             }
         } catch (IOException e) {
-//            LOGGER.info("Не удалось скопировать изображение в массив пикселей " + filename);
+            logger.info("Не удалось скопировать изображение в массив пикселей {}", filename);
             e.printStackTrace();
         }
 
