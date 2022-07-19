@@ -39,6 +39,9 @@ public class PrintCheckApp {
         ImagePageFactory imagePageFactory = new ImagePageFactory();
         imagePageFactory.createPagesForPrint();
 
+        deleteAllFilesFolder(DIR_FOR_PDF_FILES);
+        deleteAllFilesFolder(DIR_FOR_IMAGE_FILES);
+
         long end = new Date().getTime();
         long result = end - start;
         LOGGER.info("Время пдф в jpeg сек, {}", ((float) imagePageFactory.getTime()) / 1000);
